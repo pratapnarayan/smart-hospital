@@ -13,13 +13,29 @@ public interface PatientRepository extends JpaRepository<Patient, UUID> {
 
     boolean existsByMobile(String mobile);
 
-    /** Full-text search via PostgreSQL tsvector — fixes the ONLY_FULL_GROUP_BY 500 crashes from legacy system */
+    /**
+     * Full-text search via PostgreSQL tsvector, ordered by relevance rank.
+     *
+     * countQuery is mandatory for native paged queries: without it Hibernate wraps
+     * the whole statement in a subquery which PostgreSQL rejects when ORDER BY is
+     * present inside the subquery.
+     *
+     * Callers must pass an UNSORTED Pageable — the native SQL owns the ORDER BY.
+     * Passing a sorted Pageable causes Spring Data to append a second ORDER BY
+     * clause, which is a syntax error in PostgreSQL (SQLState 42601).
+     */
     @Query(value = """
             SELECT * FROM patients
             WHERE deleted_at IS NULL
               AND search_vector @@ plainto_tsquery('english', :query)
             ORDER BY ts_rank(search_vector, plainto_tsquery('english', :query)) DESC
-            """, nativeQuery = true)
+            """,
+           countQuery = """
+            SELECT COUNT(*) FROM patients
+            WHERE deleted_at IS NULL
+              AND search_vector @@ plainto_tsquery('english', :query)
+            """,
+           nativeQuery = true)
     Page<Patient> fullTextSearch(@Param("query") String query, Pageable pageable);
 
     @Query("SELECT p FROM Patient p WHERE " +

@@ -25,8 +25,9 @@ public interface OpdVisitRepository extends JpaRepository<OpdVisit, UUID> {
     @Query("SELECT v.visitStatus, COUNT(v) FROM OpdVisit v WHERE v.visitDate = :date GROUP BY v.visitStatus")
     List<Object[]> countByStatusForDate(@Param("date") LocalDate date);
 
-    /** Next visit number sequence — e.g. OPD-2026-00042 */
-    @Query(value = "SELECT COUNT(*) + 1 FROM opd_visits WHERE EXTRACT(YEAR FROM visit_date) = :year",
+    /** Next visit number sequence — e.g. OPD-2026-00042
+     *  Counts by visit_number prefix so it stays correct even when visit_date is backdated. */
+    @Query(value = "SELECT COUNT(*) + 1 FROM opd_visits WHERE visit_number LIKE CONCAT('OPD-', :year, '-%')",
            nativeQuery = true)
     long nextSequenceForYear(@Param("year") int year);
 

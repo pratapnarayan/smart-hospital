@@ -6,6 +6,7 @@ import com.smarthospital.modules.patient.domain.Patient;
 import com.smarthospital.modules.patient.dto.PatientCreateRequest;
 import com.smarthospital.modules.patient.dto.PatientResponse;
 import com.smarthospital.modules.patient.repository.PatientRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,11 @@ public class PatientService {
 
     public PageResponse<PatientResponse> search(String query, Pageable pageable) {
         if (StringUtils.hasText(query)) {
-            return PageResponse.of(patientRepository.fullTextSearch(query, pageable).map(PatientResponse::from));
+            // The native FTS query owns its own ORDER BY (ts_rank relevance).
+            // Passing a sorted Pageable would make Spring Data append a second
+            // ORDER BY, which PostgreSQL rejects with SQLState 42601.
+            PageRequest unsorted = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+            return PageResponse.of(patientRepository.fullTextSearch(query, unsorted).map(PatientResponse::from));
         }
         return PageResponse.of(patientRepository.findAll(pageable).map(PatientResponse::from));
     }

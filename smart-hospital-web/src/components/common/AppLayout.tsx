@@ -4,7 +4,7 @@ import {
   DashboardOutlined, UserOutlined, MedicineBoxOutlined,
   ExperimentOutlined, LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined,
   BellOutlined, ShopOutlined, HomeOutlined, ScheduleOutlined, TeamOutlined,
-  DollarOutlined, InboxOutlined, HeartOutlined, AlertOutlined,
+  DollarOutlined, InboxOutlined, HeartOutlined, AlertOutlined, RadarChartOutlined,
 } from '@ant-design/icons'
 import { useAuthStore } from '@/store/authStore'
 import { useUiStore } from '@/store/uiStore'
@@ -62,6 +62,15 @@ export function AppLayout() {
     {
       key: 'pathology', icon: <ExperimentOutlined />, label: 'Pathology',
       onClick: () => navigate('/pathology'),
+    },
+    {
+      key: 'radiology', icon: <RadarChartOutlined />, label: 'Radiology',
+      children: [
+        { key: 'radiology/dashboard', label: 'Overview',
+          onClick: () => navigate('/radiology/dashboard') },
+        { key: 'radiology/orders', label: 'Orders',
+          onClick: () => navigate('/radiology/orders') },
+      ],
     },
     {
       key: 'operation', icon: <AlertOutlined />, label: 'Operation Theatre',

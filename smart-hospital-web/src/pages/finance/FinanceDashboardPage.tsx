@@ -74,7 +74,7 @@ export function FinanceDashboardPage() {
         <Col xs={24} sm={12} md={4}>
           <Card loading={isLoading}>
             <Statistic
-              title="This Month — Income"
+              title="Last 30 Days — Income"
               value={fmt(dash?.monthIncome ?? 0)}
               valueStyle={{ color: '#52c41a' }}
               prefix={<ArrowUpOutlined />}
@@ -84,7 +84,7 @@ export function FinanceDashboardPage() {
         <Col xs={24} sm={12} md={4}>
           <Card loading={isLoading}>
             <Statistic
-              title="This Month — Expenses"
+              title="Last 30 Days — Expenses"
               value={fmt(dash?.monthExpenses ?? 0)}
               valueStyle={{ color: '#ff4d4f' }}
               prefix={<ArrowDownOutlined />}
@@ -94,7 +94,7 @@ export function FinanceDashboardPage() {
         <Col xs={24} sm={12} md={4}>
           <Card loading={isLoading}>
             <Statistic
-              title="This Month — Net"
+              title="Last 30 Days — Net"
               value={fmt(monthNet)}
               valueStyle={{ color: monthNet >= 0 ? '#1677ff' : '#ff4d4f' }}
             />
@@ -104,7 +104,7 @@ export function FinanceDashboardPage() {
 
       <Row gutter={16}>
         <Col xs={24} md={12}>
-          <Card title="Income by Source — This Month" loading={isLoading}>
+          <Card title="Income by Source — Last 30 Days" loading={isLoading}>
             <Table
               rowKey="source"
               size="small"
@@ -116,7 +116,7 @@ export function FinanceDashboardPage() {
           </Card>
         </Col>
         <Col xs={24} md={12}>
-          <Card title="Expenses by Category — This Month" loading={isLoading}>
+          <Card title="Expenses by Category — Last 30 Days" loading={isLoading}>
             <Table
               rowKey="category"
               size="small"

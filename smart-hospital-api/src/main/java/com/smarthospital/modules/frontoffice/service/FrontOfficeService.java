@@ -85,6 +85,20 @@ public class FrontOfficeService {
                 .map(AppointmentResponse::from));
     }
 
+    public PageResponse<AppointmentResponse> listUpcoming(Pageable pageable) {
+        List<AppointmentStatus> active = List.of(AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED);
+        return PageResponse.of(appointmentRepository
+                .findUpcoming(LocalDate.now(), active, pageable)
+                .map(AppointmentResponse::from));
+    }
+
+    public List<AppointmentResponse> listUpcomingByPatient(UUID patientId) {
+        List<AppointmentStatus> active = List.of(AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED);
+        return appointmentRepository
+                .findUpcomingByPatient(patientId, LocalDate.now(), active)
+                .stream().map(AppointmentResponse::from).toList();
+    }
+
     public PageResponse<AppointmentResponse> listByDoctor(UUID doctorId, LocalDate date, Pageable pageable) {
         LocalDate target = date != null ? date : LocalDate.now();
         return PageResponse.of(

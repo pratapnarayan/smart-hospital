@@ -1,47 +1,78 @@
-import { Row, Col, Card, Statistic, Typography, Alert, Spin } from 'antd'
+import { Row, Col, Card, Statistic, Alert, Spin, Table, Tag } from 'antd'
 import {
   UserOutlined, MedicineBoxOutlined, ShopOutlined, WarningOutlined,
 } from '@ant-design/icons'
 import { useAuthStore } from '@/store/authStore'
 import { useLowStockMedicines, useExpiringBatches } from '@/hooks/usePharmacy'
+import { useVisitsByDate } from '@/hooks/useOpdVisits'
+import { usePatients } from '@/hooks/usePatients'
 import { PageHeader } from '@/components/common/PageHeader'
-import { formatDate } from '@/utils'
+import { formatDate, formatCurrency } from '@/utils'
+import type { OpdVisit, VisitStatus } from '@/types'
+import type { ColumnsType } from 'antd/es/table'
 import dayjs from 'dayjs'
+
+const VISIT_STATUS_COLOR: Record<VisitStatus, string> = {
+  REGISTERED:  'default',
+  IN_PROGRESS: 'processing',
+  COMPLETED:   'success',
+  CANCELLED:   'error',
+}
+
+const recentColumns: ColumnsType<OpdVisit> = [
+  { title: 'Visit No.',  dataIndex: 'visitNumber',  width: 130 },
+  { title: 'Patient',    dataIndex: 'patientName' },
+  { title: 'Doctor',     dataIndex: 'doctorName',   render: (v?: string) => v ?? '—' },
+  { title: 'Department', dataIndex: 'department',   render: (v?: string) => v ?? '—' },
+  { title: 'Fee',        dataIndex: 'consultationFee', render: formatCurrency },
+  {
+    title: 'Status', dataIndex: 'visitStatus',
+    render: (v: VisitStatus) => <Tag color={VISIT_STATUS_COLOR[v]}>{v.replace('_', ' ')}</Tag>,
+  },
+]
 
 export function DashboardPage() {
   const { user } = useAuthStore()
-  const { data: lowStock,  isLoading: loadingLow }    = useLowStockMedicines()
-  const { data: expiring,  isLoading: loadingExpiry } = useExpiringBatches(30)
+  const today = dayjs().format('YYYY-MM-DD')
 
-  const today = dayjs().format('DD MMM YYYY')
+  const { data: todayVisits,  isLoading: loadingVisits }  = useVisitsByDate(today)
+  const { data: patientsPage, isLoading: loadingPatients } = usePatients(undefined, 0, 1)
+  const { data: lowStock,     isLoading: loadingLow }     = useLowStockMedicines()
+  const { data: expiring,     isLoading: loadingExpiry }  = useExpiringBatches(30)
 
   return (
     <div>
       <PageHeader
         title={`Good ${getGreeting()}, ${user?.firstName ?? ''}!`}
-        subtitle={`Today is ${today} · ${user?.tenantId}`}
+        subtitle={`Today is ${dayjs().format('DD MMM YYYY')} · ${user?.tenantId}`}
       />
 
-      {/* KPI cards */}
+      {/* ── KPI cards ────────────────────────────────────────────────────── */}
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
           <Card>
-            <Statistic
-              title="Today's OPD Visits"
-              value="—"
-              prefix={<MedicineBoxOutlined style={{ color: '#1677ff' }} />}
-              valueStyle={{ color: '#1677ff' }}
-            />
+            {loadingVisits
+              ? <Spin />
+              : <Statistic
+                  title="Today's OPD Visits"
+                  value={todayVisits?.total ?? 0}
+                  prefix={<MedicineBoxOutlined style={{ color: '#1677ff' }} />}
+                  valueStyle={{ color: '#1677ff' }}
+                />
+            }
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <Card>
-            <Statistic
-              title="Registered Patients"
-              value="—"
-              prefix={<UserOutlined style={{ color: '#52c41a' }} />}
-              valueStyle={{ color: '#52c41a' }}
-            />
+            {loadingPatients
+              ? <Spin />
+              : <Statistic
+                  title="Registered Patients"
+                  value={patientsPage?.total ?? 0}
+                  prefix={<UserOutlined style={{ color: '#52c41a' }} />}
+                  valueStyle={{ color: '#52c41a' }}
+                />
+            }
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
@@ -72,7 +103,7 @@ export function DashboardPage() {
         </Col>
       </Row>
 
-      {/* Alerts */}
+      {/* ── Alerts ───────────────────────────────────────────────────────── */}
       <div className="mt-4 space-y-2">
         {lowStock && lowStock.length > 0 && (
           <Alert
@@ -87,21 +118,32 @@ export function DashboardPage() {
             type="warning"
             showIcon
             message={`${expiring.length} batch(es) expiring within 30 days`}
-            description={expiring.slice(0, 5).map((b) => `${b.medicineName} — ${b.batchNumber} (expires ${formatDate(b.expiryDate)})`).join(' · ')}
+            description={expiring.slice(0, 5)
+              .map((b) => `${b.medicineName} — ${b.batchNumber} (expires ${formatDate(b.expiryDate)})`)
+              .join(' · ')}
           />
         )}
-        {(!lowStock?.length && !expiring?.length && !loadingLow && !loadingExpiry) && (
+        {!loadingLow && !loadingExpiry && !lowStock?.length && !expiring?.length && (
           <Alert type="success" showIcon message="All systems normal — no stock or expiry alerts." />
         )}
       </div>
 
-      {/* Coming soon */}
+      {/* ── Today's OPD Visits table ──────────────────────────────────────── */}
       <Row gutter={[16, 16]} className="mt-4">
         <Col span={24}>
-          <Card title="Recent OPD Visits" extra={<Typography.Link href="/opd">View all</Typography.Link>}>
-            <Typography.Text type="secondary">
-              OPD visit feed will appear here — navigate to <Typography.Link href="/opd">OPD</Typography.Link> to register a visit.
-            </Typography.Text>
+          <Card
+            title={`Today's OPD Visits — ${formatDate(today)}`}
+            extra={<a href="/opd">View all</a>}
+          >
+            <Table
+              rowKey="id"
+              size="small"
+              loading={loadingVisits}
+              dataSource={todayVisits?.content ?? []}
+              columns={recentColumns}
+              pagination={false}
+              locale={{ emptyText: 'No OPD visits registered today' }}
+            />
           </Card>
         </Col>
       </Row>

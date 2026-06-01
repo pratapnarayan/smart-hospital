@@ -21,7 +21,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
 
     boolean existsByEmployeeCode(String code);
 
-    @Query(value = "SELECT COUNT(*) + 1 FROM employees WHERE EXTRACT(YEAR FROM join_date) = :year",
+    @Query(value = "SELECT COUNT(*) + 1 FROM employees WHERE employee_code LIKE CONCAT('EMP-', :year, '-%')",
            nativeQuery = true)
     long nextSequenceForYear(@Param("year") int year);
 

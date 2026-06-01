@@ -23,7 +23,7 @@ public interface IpdAdmissionRepository extends JpaRepository<IpdAdmission, UUID
     /** Checks if a bed is currently occupied by an active admission */
     boolean existsByBedIdAndStatus(UUID bedId, AdmissionStatus status);
 
-    @Query(value = "SELECT COUNT(*) + 1 FROM ipd_admissions WHERE EXTRACT(YEAR FROM admission_date) = :year",
+    @Query(value = "SELECT COUNT(*) + 1 FROM ipd_admissions WHERE admission_number LIKE CONCAT('IPD-', :year, '-%')",
            nativeQuery = true)
     long nextSequenceForYear(@Param("year") int year);
 

@@ -31,8 +31,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -96,8 +94,15 @@ public class DevDataSeeder implements ApplicationRunner {
         this.bloodUnitRepository       = bloodUnitRepository;
     }
 
+    // NOTE: No @Transactional here — same reason as DemoDataSeeder.
+    // With @Transactional, the connection is acquired at the start of run() when
+    // TenantContext is null, which sets search_path TO public for the entire call.
+    // Every subsequent TenantContext.set("hospital_001") inside a seed method is
+    // then ignored because the connection is already bound to the transaction.
+    // Without @Transactional, each save() / count() call opens its own transaction,
+    // gets a fresh connection from TenantAwareDataSource, and search_path is set
+    // correctly from the current TenantContext at that moment.
     @Override
-    @Transactional
     public void run(ApplicationArguments args) {
         seedSuperAdmin();
         seedTenantAdmin();

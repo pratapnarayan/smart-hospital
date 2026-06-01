@@ -31,6 +31,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
+import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -288,6 +289,11 @@ public class DemoDataSeeder implements ApplicationRunner {
         // Tables with ON DELETE CASCADE (ot_consumables, lab_order_items, radiology_order_items,
         // opd_charges, prescriptions/prescription_items, ipd_charges) are handled automatically
         // when their parent is deleted.
+        //
+        // IMPORTANT: all deletes run on a single connection with search_path set to the tenant
+        // schema.  Without this, JdbcTemplate uses the default 'public' search_path while JPA
+        // (via TenantAwareDataSource) operates on the tenant schema — leaving stale tenant data
+        // behind and causing duplicate-key errors on the next saveAll().
         String[] deletes = {
             "DELETE FROM ot_schedules",            // cascades → ot_consumables
             "DELETE FROM blood_issues",
@@ -319,13 +325,21 @@ public class DemoDataSeeder implements ApplicationRunner {
             "DELETE FROM stock_issues",
             "DELETE FROM stock_receipts",
         };
-        for (String sql : deletes) {
+        jdbc.execute((ConnectionCallback<Void>) conn -> {
             try {
-                jdbc.execute(sql);
+                conn.createStatement().execute("SET search_path TO " + TENANT + ", public");
             } catch (Exception ex) {
-                log.warn("[DemoSeeder] Skipping failed cleanup statement: {} — {}", sql, ex.getMessage());
+                log.warn("[DemoSeeder] Could not set search_path to '{}' — {}", TENANT, ex.getMessage());
             }
-        }
+            for (String sql : deletes) {
+                try {
+                    conn.createStatement().execute(sql);
+                } catch (Exception ex) {
+                    log.warn("[DemoSeeder] Skipping failed cleanup statement: {} — {}", sql, ex.getMessage());
+                }
+            }
+            return null;
+        });
         log.info("[DemoSeeder] Old data cleared.");
     }
 

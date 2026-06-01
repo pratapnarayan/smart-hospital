@@ -144,7 +144,8 @@ public class FinanceService {
 
     public FinanceDashboardResponse getDashboard() {
         LocalDate today      = LocalDate.now();
-        LocalDate monthStart = today.withDayOfMonth(1);
+        // Rolling 30-day window so the dashboard always shows data even on day 1 of a new month.
+        LocalDate monthStart = today.minusDays(29);
 
         BigDecimal todayIncome   = incomeRepository.sumByDate(today);
         BigDecimal todayExpenses = expenseRepository.sumByDate(today);

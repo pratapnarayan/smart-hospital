@@ -6,10 +6,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,10 +35,15 @@ public class TenantMigrationService implements ApplicationRunner {
 
     private static final Logger log = LoggerFactory.getLogger(TenantMigrationService.class);
 
-    private final DataSource dataSource;
+    private static final String DEV_TENANT_SCHEMA = "hospital_001";
+    private static final String DEV_TENANT_NAME   = "Demo Hospital";
 
-    public TenantMigrationService(DataSource dataSource) {
-        this.dataSource = dataSource;
+    private final DataSource  dataSource;
+    private final Environment environment;
+
+    public TenantMigrationService(DataSource dataSource, Environment environment) {
+        this.dataSource   = dataSource;
+        this.environment  = environment;
     }
 
     @Override
@@ -44,12 +51,41 @@ public class TenantMigrationService implements ApplicationRunner {
         List<String> tenantSchemas = loadTenantSchemas();
 
         if (tenantSchemas.isEmpty()) {
-            log.warn("[TenantMigration] No tenants found in public.tenants — skipping tenant migrations.");
-            return;
+            if (isDevProfile()) {
+                log.info("[TenantMigration] Dev mode — bootstrapping '{}' tenant.", DEV_TENANT_SCHEMA);
+                bootstrapDevTenant();
+                tenantSchemas = loadTenantSchemas();
+            }
+            if (tenantSchemas.isEmpty()) {
+                log.warn("[TenantMigration] No tenants found in public.tenants — skipping tenant migrations.");
+                return;
+            }
         }
 
         for (String schema : tenantSchemas) {
             migrateTenantSchema(schema);
+        }
+    }
+
+    private boolean isDevProfile() {
+        return Arrays.asList(environment.getActiveProfiles()).contains("dev");
+    }
+
+    /**
+     * Inserts hospital_001 into public.tenants so TenantMigrationService can
+     * migrate its schema on every dev startup.  Uses ON CONFLICT DO NOTHING so
+     * the operation is idempotent — safe to run repeatedly.
+     */
+    private void bootstrapDevTenant() {
+        JdbcTemplate jdbc = new JdbcTemplate(dataSource);
+        try {
+            jdbc.update(
+                "INSERT INTO public.tenants (name, schema_name, plan, status) " +
+                "VALUES (?, ?, 'BASIC', 'ACTIVE') ON CONFLICT (schema_name) DO NOTHING",
+                DEV_TENANT_NAME, DEV_TENANT_SCHEMA);
+            log.info("[TenantMigration] '{}' tenant registered in public.tenants.", DEV_TENANT_SCHEMA);
+        } catch (Exception e) {
+            log.warn("[TenantMigration] Could not bootstrap dev tenant — {}", e.getMessage());
         }
     }
 

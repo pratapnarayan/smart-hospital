@@ -61,6 +61,17 @@ public class FrontOfficeController {
         return ResponseEntity.ok(ApiResponse.ok(service.listByDate(date, pageable)));
     }
 
+    @GetMapping("/appointments/upcoming")
+    @PreAuthorize("hasAuthority('FRONTOFFICE.VIEW')")
+    @Operation(summary = "List all upcoming appointments (today onwards, SCHEDULED or CONFIRMED)")
+    public ResponseEntity<ApiResponse<PageResponse<AppointmentResponse>>> listUpcoming(
+            @RequestParam(defaultValue = "0")   int page,
+            @RequestParam(defaultValue = "100") int size) {
+        PageRequest pageable = PageRequest.of(page, size,
+                Sort.by("appointmentDate").ascending().and(Sort.by("timeSlot").ascending()));
+        return ResponseEntity.ok(ApiResponse.ok(service.listUpcoming(pageable)));
+    }
+
     @GetMapping("/appointments/patient/{patientId}")
     @PreAuthorize("hasAuthority('FRONTOFFICE.VIEW')")
     @Operation(summary = "List all appointments for a patient")
@@ -70,6 +81,14 @@ public class FrontOfficeController {
             @RequestParam(defaultValue = "20") int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("appointmentDate").descending());
         return ResponseEntity.ok(ApiResponse.ok(service.listByPatient(patientId, pageable)));
+    }
+
+    @GetMapping("/appointments/patient/{patientId}/upcoming")
+    @PreAuthorize("hasAuthority('FRONTOFFICE.VIEW')")
+    @Operation(summary = "List upcoming appointments for a patient (today onwards, active statuses)")
+    public ResponseEntity<ApiResponse<List<AppointmentResponse>>> listUpcomingByPatient(
+            @PathVariable UUID patientId) {
+        return ResponseEntity.ok(ApiResponse.ok(service.listUpcomingByPatient(patientId)));
     }
 
     @GetMapping("/appointments/doctor/{doctorId}")

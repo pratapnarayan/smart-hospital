@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -55,6 +56,16 @@ public class GlobalExceptionHandler {
                 .code("VALIDATION_FAILED")
                 .message("Constraint violation")
                 .details(details)
+                .timestamp(Instant.now())
+                .build();
+        return ResponseEntity.badRequest().body(ApiResponse.error(error));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotReadable(HttpMessageNotReadableException ex) {
+        ErrorResponse error = ErrorResponse.builder()
+                .code("INVALID_REQUEST_BODY")
+                .message("Request body is malformed or contains an invalid value")
                 .timestamp(Instant.now())
                 .build();
         return ResponseEntity.badRequest().body(ApiResponse.error(error));

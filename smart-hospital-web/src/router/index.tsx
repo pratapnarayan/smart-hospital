@@ -30,6 +30,8 @@ import { BloodRequestListPage } from '@/pages/bloodbank/BloodRequestListPage'
 import { OtDashboardPage } from '@/pages/operation/OtDashboardPage'
 import { OtScheduleListPage } from '@/pages/operation/OtScheduleListPage'
 import { OtScheduleDetailPage } from '@/pages/operation/OtScheduleDetailPage'
+import { RadiologyDashboardPage } from '@/pages/radiology/RadiologyDashboardPage'
+import { RadiologyOrdersPage } from '@/pages/radiology/RadiologyOrdersPage'
 
 export const router = createBrowserRouter([
   {
@@ -134,6 +136,16 @@ export const router = createBrowserRouter([
       {
         path: 'operation/schedules/:id',
         element: <PrivateRoute permission="OPERATION.VIEW"><OtScheduleDetailPage /></PrivateRoute>,
+      },
+
+      // ── Radiology ─────────────────────────────────────────────────────────
+      {
+        path: 'radiology/dashboard',
+        element: <PrivateRoute permission="RADIOLOGY.VIEW"><RadiologyDashboardPage /></PrivateRoute>,
+      },
+      {
+        path: 'radiology/orders',
+        element: <PrivateRoute permission="RADIOLOGY.VIEW"><RadiologyOrdersPage /></PrivateRoute>,
       },
 
       // ── Blood Bank ────────────────────────────────────────────────────────

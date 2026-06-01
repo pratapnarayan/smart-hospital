@@ -84,7 +84,7 @@ export function OtDashboardPage() {
         </Col>
         <Col xs={12} md={5}>
           <Card loading={isLoading}>
-            <Statistic title="This Month — Total" value={dash?.monthTotal ?? 0} />
+            <Statistic title="Last 30 Days — Total" value={dash?.monthTotal ?? 0} />
           </Card>
         </Col>
         <Col xs={24} md={4}>
@@ -110,7 +110,7 @@ export function OtDashboardPage() {
           </Card>
         </Col>
         <Col xs={24} xl={7}>
-          <Card title="Theatre Utilization — This Month" loading={isLoading}>
+          <Card title="Theatre Utilization — Last 30 Days" loading={isLoading}>
             <Table
               rowKey="theatreName"
               size="small"

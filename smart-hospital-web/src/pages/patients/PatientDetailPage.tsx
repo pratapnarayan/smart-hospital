@@ -1,24 +1,29 @@
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Card, Descriptions, Tag, Button, Tabs, Spin, Alert } from 'antd'
-import { EditOutlined, PlusOutlined } from '@ant-design/icons'
+import { Card, Descriptions, Tag, Button, Tabs, Spin, Alert, Typography } from 'antd'
+import { EditOutlined, PlusOutlined, CalendarOutlined } from '@ant-design/icons'
+import { AppointmentFormModal } from '@/pages/frontoffice/AppointmentFormModal'
 import { usePatient } from '@/hooks/usePatients'
 import { useVisitsByPatient } from '@/hooks/useOpdVisits'
+import { usePatientUpcomingAppointments, useCancelAppointment } from '@/hooks/useFrontOffice'
 import { PageHeader } from '@/components/common/PageHeader'
 import { PatientFormModal } from './PatientFormModal'
 import { formatDate, formatDateTime, calcAge, formatCurrency } from '@/utils'
 import type { TableProps } from 'antd'
-import { Table } from 'antd'
-import type { OpdVisit } from '@/types'
+import { Table, Popconfirm, Empty } from 'antd'
+import type { OpdVisit, Appointment, AppointmentStatus } from '@/types'
 import { useNavigate } from 'react-router-dom'
 
 export function PatientDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [editOpen, setEditOpen] = useState(false)
+  const [apptOpen, setApptOpen] = useState(false)
 
   const { data: patient, isLoading, isError } = usePatient(id!)
   const { data: visitsPage } = useVisitsByPatient(id!)
+  const { data: upcomingApts } = usePatientUpcomingAppointments(id!)
+  const { mutate: cancelApt } = useCancelAppointment()
 
   if (isLoading) return <Spin size="large" className="flex justify-center mt-20" />
   if (isError || !patient) return <Alert type="error" message="Patient not found" />
@@ -50,20 +55,30 @@ export function PatientDetailPage() {
     <div>
       <PageHeader
         title={`${patient.firstName} ${patient.lastName}`}
-        subtitle={`ID: ${patient.id.substring(0, 8)}… · Registered ${formatDate(patient.createdAt)}`}
+        subtitle={`Registered ${formatDate(patient.createdAt)}`}
         breadcrumbs={[
           { title: 'Patients', href: '/patients' },
           { title: `${patient.firstName} ${patient.lastName}` },
         ]}
         extra={
-          <Button icon={<EditOutlined />} onClick={() => setEditOpen(true)}>
-            Edit
-          </Button>
+          <Button.Group>
+            <Button icon={<CalendarOutlined />} onClick={() => setApptOpen(true)}>
+              Book Appointment
+            </Button>
+            <Button icon={<EditOutlined />} onClick={() => setEditOpen(true)}>
+              Edit
+            </Button>
+          </Button.Group>
         }
       />
 
       <Card className="mb-4">
         <Descriptions column={{ xs: 1, sm: 2, lg: 3 }} bordered size="small">
+          <Descriptions.Item label="Patient ID" span={3}>
+            <Typography.Text code copyable={{ text: patient.id }}>
+              {patient.id}
+            </Typography.Text>
+          </Descriptions.Item>
           <Descriptions.Item label="Gender">
             <Tag color={patient.gender === 'MALE' ? 'blue' : patient.gender === 'FEMALE' ? 'pink' : 'default'}>
               {patient.gender}
@@ -86,8 +101,54 @@ export function PatientDetailPage() {
       </Card>
 
       <Tabs
-        defaultActiveKey="opd"
+        defaultActiveKey="appointments"
         items={[
+          {
+            key: 'appointments',
+            label: `Upcoming Appointments${upcomingApts?.length ? ` (${upcomingApts.length})` : ''}`,
+            children: (
+              <Card
+                extra={
+                  <Button icon={<CalendarOutlined />} size="small" type="primary"
+                    onClick={() => setApptOpen(true)}>
+                    Book Appointment
+                  </Button>
+                }
+              >
+                {!upcomingApts?.length ? (
+                  <Empty description="No upcoming appointments" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                ) : (
+                  <Table
+                    rowKey="id"
+                    size="small"
+                    pagination={false}
+                    dataSource={upcomingApts}
+                    columns={[
+                      { title: 'Date',       dataIndex: 'appointmentDate', render: formatDate, width: 110 },
+                      { title: 'Time Slot',  dataIndex: 'timeSlot',        render: (v?: string) => v ?? '—' },
+                      { title: 'Doctor',     dataIndex: 'doctorName',      render: (v?: string) => v ?? '—' },
+                      { title: 'Department', dataIndex: 'department',      render: (v?: string) => v ?? '—' },
+                      { title: 'Type',       dataIndex: 'appointmentType',
+                        render: (v: string) => <Tag>{v.replace('_', ' ')}</Tag> },
+                      { title: 'Status',     dataIndex: 'status',
+                        render: (v: AppointmentStatus) => (
+                          <Tag color={v === 'CONFIRMED' ? 'processing' : 'default'}>{v}</Tag>
+                        ),
+                      },
+                      {
+                        title: '', key: 'actions',
+                        render: (_, r: Appointment) => (
+                          <Popconfirm title="Cancel this appointment?" onConfirm={() => cancelApt(r.id)}>
+                            <Button size="small" danger>Cancel</Button>
+                          </Popconfirm>
+                        ),
+                      },
+                    ] satisfies TableProps<Appointment>['columns']}
+                  />
+                )}
+              </Card>
+            ),
+          },
           {
             key: 'opd',
             label: 'OPD History',
@@ -128,6 +189,12 @@ export function PatientDetailPage() {
         open={editOpen}
         onClose={() => setEditOpen(false)}
         patient={patient}
+      />
+      <AppointmentFormModal
+        open={apptOpen}
+        onClose={() => setApptOpen(false)}
+        patientId={patient.id}
+        patientName={`${patient.firstName} ${patient.lastName}`}
       />
     </div>
   )

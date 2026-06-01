@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +25,19 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
 
     long countByAppointmentDateAndStatus(LocalDate date, AppointmentStatus status);
 
-    @Query(value = "SELECT COUNT(*) + 1 FROM appointments WHERE EXTRACT(YEAR FROM appointment_date) = :year",
+    /** All upcoming appointments (date >= today) for the given active statuses. */
+    @Query("SELECT a FROM Appointment a WHERE a.appointmentDate >= :fromDate AND a.status IN :statuses")
+    Page<Appointment> findUpcoming(@Param("fromDate") LocalDate fromDate,
+                                   @Param("statuses") Collection<AppointmentStatus> statuses,
+                                   Pageable pageable);
+
+    /** Upcoming appointments for a single patient, sorted earliest first. */
+    @Query("SELECT a FROM Appointment a WHERE a.patientId = :patientId AND a.appointmentDate >= :fromDate AND a.status IN :statuses ORDER BY a.appointmentDate ASC, a.timeSlot ASC NULLS LAST")
+    List<Appointment> findUpcomingByPatient(@Param("patientId") UUID patientId,
+                                            @Param("fromDate") LocalDate fromDate,
+                                            @Param("statuses") Collection<AppointmentStatus> statuses);
+
+    @Query(value = "SELECT COUNT(*) + 1 FROM appointments WHERE appointment_number LIKE CONCAT('APT-', :year, '-%')",
            nativeQuery = true)
     long nextSequenceForYear(@Param("year") int year);
 }

@@ -33,6 +33,7 @@ export function useStockSummary(medicineId: string) {
   return useQuery({
     queryKey: PHARMA_KEYS.stock(medicineId),
     queryFn: () => pharmacyApi.getStock(medicineId).then((r) => r.data.data),
+    enabled: !!medicineId,   // don't fire until a medicine is actually selected
     staleTime: 15_000,
   })
 }

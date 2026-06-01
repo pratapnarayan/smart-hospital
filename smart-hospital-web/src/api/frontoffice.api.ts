@@ -17,9 +17,16 @@ export const frontOfficeApi = {
   listAppointments: (params: { date?: string; page?: number; size?: number }) =>
     apiClient.get<ApiResponse<PageResponse<Appointment>>>('/v1/frontoffice/appointments', { params }),
 
+  listUpcoming: (params?: { page?: number; size?: number }) =>
+    apiClient.get<ApiResponse<PageResponse<Appointment>>>('/v1/frontoffice/appointments/upcoming', { params }),
+
   listByPatient: (patientId: string, params?: { page?: number; size?: number }) =>
     apiClient.get<ApiResponse<PageResponse<Appointment>>>(
       `/v1/frontoffice/appointments/patient/${patientId}`, { params }),
+
+  listUpcomingByPatient: (patientId: string) =>
+    apiClient.get<ApiResponse<Appointment[]>>(
+      `/v1/frontoffice/appointments/patient/${patientId}/upcoming`),
 
   listByDoctor: (doctorId: string, params?: { date?: string; page?: number; size?: number }) =>
     apiClient.get<ApiResponse<PageResponse<Appointment>>>(

@@ -4,11 +4,13 @@ import { frontOfficeApi } from '@/api'
 import type { BookAppointmentPayload, IssueTokenPayload, AppointmentStatus, TokenStatus } from '@/types'
 
 const KEYS = {
-  appointments: (date?: string) => ['frontoffice', 'appointments', date ?? 'today'] as const,
-  appointment:  (id: string) => ['frontoffice', 'appointments', id] as const,
-  byPatient:    (id: string) => ['frontoffice', 'appointments', 'patient', id] as const,
-  tokens:       (date?: string, dept?: string) => ['frontoffice', 'tokens', date ?? 'today', dept ?? 'all'] as const,
-  dashboard:    ['frontoffice', 'dashboard'] as const,
+  appointments:  (date?: string) => ['frontoffice', 'appointments', date ?? 'today'] as const,
+  appointment:   (id: string) => ['frontoffice', 'appointments', id] as const,
+  upcoming:      ['frontoffice', 'appointments', 'upcoming'] as const,
+  byPatient:     (id: string) => ['frontoffice', 'appointments', 'patient', id] as const,
+  upcomingByPt:  (id: string) => ['frontoffice', 'appointments', 'patient', id, 'upcoming'] as const,
+  tokens:        (date?: string, dept?: string) => ['frontoffice', 'tokens', date ?? 'today', dept ?? 'all'] as const,
+  dashboard:     ['frontoffice', 'dashboard'] as const,
 }
 
 export function useFrontOfficeDashboard() {
@@ -39,6 +41,23 @@ export function usePatientAppointments(patientId: string) {
     queryKey: KEYS.byPatient(patientId),
     queryFn: () => frontOfficeApi.listByPatient(patientId).then(r => r.data.data),
     enabled: !!patientId,
+  })
+}
+
+export function useUpcomingAppointments() {
+  return useQuery({
+    queryKey: KEYS.upcoming,
+    queryFn: () => frontOfficeApi.listUpcoming({ size: 100 }).then(r => r.data.data),
+    staleTime: 30_000,
+  })
+}
+
+export function usePatientUpcomingAppointments(patientId: string) {
+  return useQuery({
+    queryKey: KEYS.upcomingByPt(patientId),
+    queryFn: () => frontOfficeApi.listUpcomingByPatient(patientId).then(r => r.data.data),
+    enabled: !!patientId,
+    staleTime: 30_000,
   })
 }
 
