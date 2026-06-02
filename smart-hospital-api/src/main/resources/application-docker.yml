@@ -20,16 +20,6 @@ spring:
   flyway:
     out-of-order: false
 
-  # Redis connection — credentials injected by docker-compose.
-  # The application still uses InMemoryRefreshTokenStore until
-  # RedisRefreshTokenStore is implemented (Checklist P0).
-  # When ready: set app.token-store=redis and remove Redis from
-  # spring.autoconfigure.exclude in application.yml.
-  data:
-    redis:
-      host:     ${REDIS_HOST:redis}
-      port:     ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
 
 app:
   cors:

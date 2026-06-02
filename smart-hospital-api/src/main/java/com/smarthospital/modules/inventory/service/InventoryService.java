@@ -155,7 +155,7 @@ public class InventoryService {
 
     public PageResponse<StockReceiptResponse> listReceipts(
             LocalDate from, LocalDate to, UUID itemId, Pageable pageable) {
-        LocalDate f = from != null ? from : LocalDate.now().withDayOfMonth(1);
+        LocalDate f = from != null ? from : LocalDate.now().minusDays(29);
         LocalDate t = to   != null ? to   : LocalDate.now();
         if (itemId != null)
             return PageResponse.of(receiptRepository
@@ -211,7 +211,7 @@ public class InventoryService {
 
     public PageResponse<StockIssueResponse> listIssues(
             LocalDate from, LocalDate to, UUID itemId, Pageable pageable) {
-        LocalDate f = from != null ? from : LocalDate.now().withDayOfMonth(1);
+        LocalDate f = from != null ? from : LocalDate.now().minusDays(29);
         LocalDate t = to   != null ? to   : LocalDate.now();
         if (itemId != null)
             return PageResponse.of(issueRepository

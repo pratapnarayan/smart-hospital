@@ -11,6 +11,7 @@ import com.smarthospital.modules.ipd.domain.IpdWard;
 import com.smarthospital.modules.ipd.dto.*;
 import com.smarthospital.modules.ipd.repository.IpdAdmissionRepository;
 import com.smarthospital.modules.ipd.repository.IpdBedRepository;
+import com.smarthospital.modules.ipd.repository.IpdChargeRepository;
 import com.smarthospital.modules.ipd.repository.IpdWardRepository;
 import com.smarthospital.modules.patient.domain.Patient;
 import com.smarthospital.modules.patient.repository.PatientRepository;
@@ -35,15 +36,18 @@ public class IpdService {
     private final IpdBedRepository       bedRepository;
     private final IpdWardRepository      wardRepository;
     private final PatientRepository      patientRepository;
+    private final IpdChargeRepository    chargeRepository;
 
     public IpdService(IpdAdmissionRepository admissionRepository,
                       IpdBedRepository       bedRepository,
                       IpdWardRepository      wardRepository,
-                      PatientRepository      patientRepository) {
+                      PatientRepository      patientRepository,
+                      IpdChargeRepository    chargeRepository) {
         this.admissionRepository = admissionRepository;
         this.bedRepository       = bedRepository;
         this.wardRepository      = wardRepository;
         this.patientRepository   = patientRepository;
+        this.chargeRepository    = chargeRepository;
     }
 
     // ── Ward management ──────────────────────────────────────────────────────
@@ -238,6 +242,7 @@ public class IpdService {
         LocalDate chargeDate = req.chargeDate() != null ? req.chargeDate() : LocalDate.now();
         IpdCharge charge = new IpdCharge(admission, req.category(),
                 req.description(), req.amount(), chargeDate);
+        chargeRepository.save(charge);  // persist explicitly — em.merge() on admission doesn't cascade-persist new transients
         admission.getCharges().add(charge);
         admission.recalculateTotals();
         return IpdAdmissionResponse.from(admissionRepository.save(admission));

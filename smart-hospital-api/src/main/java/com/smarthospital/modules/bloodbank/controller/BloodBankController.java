@@ -113,10 +113,10 @@ public class BloodBankController {
 
     @GetMapping("/units/available")
     @PreAuthorize("hasAuthority('BLOODBANK.VIEW')")
-    @Operation(summary = "Get available units for a blood group + component — for issue selection (FEFO order)")
+    @Operation(summary = "Get available units, optionally filtered by blood group and component type (FEFO order)")
     public ResponseEntity<ApiResponse<List<BloodUnitResponse>>> getAvailableUnits(
-            @RequestParam BloodGroup    bloodGroup,
-            @RequestParam ComponentType componentType) {
+            @RequestParam(required = false) BloodGroup    bloodGroup,
+            @RequestParam(required = false) ComponentType componentType) {
         return ResponseEntity.ok(ApiResponse.ok(service.getAvailableUnits(bloodGroup, componentType)));
     }
 

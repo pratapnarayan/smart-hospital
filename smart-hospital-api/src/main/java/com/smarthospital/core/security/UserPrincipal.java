@@ -1,5 +1,6 @@
 package com.smarthospital.core.security;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,6 +31,7 @@ public class UserPrincipal implements UserDetails {
     public List<String> getRoles()      { return roles; }
     public List<String> getPermissions(){ return permissions; }
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Stream.concat(
@@ -38,12 +40,12 @@ public class UserPrincipal implements UserDetails {
         ).toList();
     }
 
-    @Override public String  getPassword()             { return null; }   // never exposed
-    @Override public String  getUsername()             { return email; }  // also used as email by Jackson
-    @Override public boolean isAccountNonExpired()     { return true; }
-    @Override public boolean isAccountNonLocked()      { return true; }
-    @Override public boolean isCredentialsNonExpired() { return true; }
-    @Override public boolean isEnabled()               { return true; }
+    @JsonIgnore @Override public String  getPassword()             { return null; }
+    @JsonIgnore @Override public String  getUsername()             { return email; }
+    @JsonIgnore @Override public boolean isAccountNonExpired()     { return true; }
+    @JsonIgnore @Override public boolean isAccountNonLocked()      { return true; }
+    @JsonIgnore @Override public boolean isCredentialsNonExpired() { return true; }
+    @JsonIgnore @Override public boolean isEnabled()               { return true; }
 
     public static Builder builder() { return new Builder(); }
 

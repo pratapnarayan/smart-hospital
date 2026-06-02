@@ -149,8 +149,14 @@ public class BloodBankService {
 
     /** Returns matching available units sorted FEFO — used by the issue modal */
     public List<BloodUnitResponse> getAvailableUnits(BloodGroup bloodGroup, ComponentType componentType) {
-        return unitRepository.findByBloodGroupAndComponentTypeAndStatusOrderByExpiryDateAsc(
-                bloodGroup, componentType, UnitStatus.AVAILABLE)
+        if (bloodGroup != null && componentType != null)
+            return unitRepository.findByBloodGroupAndComponentTypeAndStatusOrderByExpiryDateAsc(
+                    bloodGroup, componentType, UnitStatus.AVAILABLE)
+                    .stream().map(BloodUnitResponse::from).toList();
+        if (bloodGroup != null)
+            return unitRepository.findByBloodGroupAndStatusOrderByExpiryDateAsc(bloodGroup, UnitStatus.AVAILABLE)
+                    .stream().map(BloodUnitResponse::from).toList();
+        return unitRepository.findByStatusOrderByExpiryDateAsc(UnitStatus.AVAILABLE)
                 .stream().map(BloodUnitResponse::from).toList();
     }
 

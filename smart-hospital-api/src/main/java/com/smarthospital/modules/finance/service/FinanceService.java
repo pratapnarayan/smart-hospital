@@ -85,7 +85,7 @@ public class FinanceService {
 
     public PageResponse<IncomeEntryResponse> listIncome(
             LocalDate from, LocalDate to, SourceType sourceType, Pageable pageable) {
-        LocalDate f = from != null ? from : LocalDate.now().withDayOfMonth(1);
+        LocalDate f = from != null ? from : LocalDate.now().minusDays(29);
         LocalDate t = to   != null ? to   : LocalDate.now();
         if (sourceType != null)
             return PageResponse.of(incomeRepository
@@ -129,7 +129,7 @@ public class FinanceService {
 
     public PageResponse<ExpenseEntryResponse> listExpenses(
             LocalDate from, LocalDate to, UUID categoryId, Pageable pageable) {
-        LocalDate f = from != null ? from : LocalDate.now().withDayOfMonth(1);
+        LocalDate f = from != null ? from : LocalDate.now().minusDays(29);
         LocalDate t = to   != null ? to   : LocalDate.now();
         if (categoryId != null)
             return PageResponse.of(expenseRepository
@@ -177,7 +177,7 @@ public class FinanceService {
     }
 
     public PeriodSummaryResponse getSummary(LocalDate from, LocalDate to) {
-        LocalDate f = from != null ? from : LocalDate.now().withDayOfMonth(1);
+        LocalDate f = from != null ? from : LocalDate.now().minusDays(29);
         LocalDate t = to   != null ? to   : LocalDate.now();
         BigDecimal income   = incomeRepository.sumBetween(f, t);
         BigDecimal expenses = expenseRepository.sumBetween(f, t);

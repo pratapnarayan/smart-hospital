@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import org.springframework.transaction.annotation.Propagation;
 
 @Service
 @Transactional(readOnly = true)
@@ -40,6 +41,7 @@ public class AuthService {
         this.userRepository    = userRepository;
     }
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public LoginResponse login(LoginRequest request) {
         // Set tenant context from the request if provided.
         // If absent, TenantIdentifierResolver defaults to "public" (super-admin path).
