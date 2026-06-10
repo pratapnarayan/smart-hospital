@@ -2,6 +2,11 @@ spring:
   application:
     name: smart-hospital-api
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
   autoconfigure:
     exclude:
       # Redis is not required until Phase 2 — exclude to prevent startup failure
@@ -41,6 +46,8 @@ app:
     access-token-expiry-ms: 900000      # 15 minutes
     refresh-token-expiry-ms: 604800000  # 7 days
   token-store: memory                   # "memory" (dev) | "redis" (prod)
+  upload:
+    dir: ${UPLOAD_DIR:./uploads/photos}
 
 management:
   endpoints:

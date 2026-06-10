@@ -42,6 +42,10 @@ public final class Permission {
     public static final String OPERATION_EDIT      = "OPERATION.EDIT";
     public static final String OPERATION_MANAGE    = "OPERATION.MANAGE";
     public static final String REPORTS_VIEW        = "REPORTS.VIEW";
+    public static final String DOCTOR_VIEW         = "DOCTOR.VIEW";
+    public static final String DOCTOR_CREATE       = "DOCTOR.CREATE";
+    public static final String DOCTOR_EDIT         = "DOCTOR.EDIT";
+    public static final String DOCTOR_MANAGE       = "DOCTOR.MANAGE";
 
     private Permission() {}
 }

@@ -1,14 +1,17 @@
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { Card, Descriptions, Tag, Button, Tabs, Spin, Alert, Table, Empty, Typography } from 'antd'
+import { useParams, useNavigate } from 'react-router-dom'
+import { Card, Descriptions, Tag, Button, Tabs, Spin, Alert, Table, Empty, Typography, Space } from 'antd'
 import type { TableProps } from 'antd'
-import { EditOutlined } from '@ant-design/icons'
+import { EditOutlined, SolutionOutlined } from '@ant-design/icons'
 import { PageHeader } from '@/components/common/PageHeader'
 import {
   useEmployee, useEmployeeAttendance, useEmployeeLeaves,
-  useHrDepartments, useDesignations,
+  useHrDepartments, useDesignations, useUploadEmployeePhoto,
 } from '@/hooks/useHr'
+import { useDoctorByEmployee } from '@/hooks/useDoctor'
 import { EmployeeFormModal } from './EmployeeFormModal'
+import { DoctorProfileModal } from '@/pages/doctors/DoctorProfileModal'
+import { PhotoUpload } from '@/components/common/PhotoUpload'
 import { formatDate, formatDateTime, calcAge } from '@/utils'
 import type { AttendanceRecord, AttendanceStatus, LeaveRequest, LeaveStatus } from '@/types'
 
@@ -24,13 +27,17 @@ const EMP_STATUS_COLOR: Record<string, string> = {
 
 export function EmployeeDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const [editOpen, setEditOpen] = useState(false)
+  const navigate = useNavigate()
+  const [editOpen, setEditOpen]     = useState(false)
+  const [doctorOpen, setDoctorOpen] = useState(false)
 
   const { data: employee, isLoading, isError } = useEmployee(id!)
   const { data: attendance = [] }              = useEmployeeAttendance(id!)
   const { data: leavesPage }                   = useEmployeeLeaves(id!)
   const { data: depts = [] }                   = useHrDepartments()
   const { data: designations = [] }            = useDesignations()
+  const { data: doctorProfile }                = useDoctorByEmployee(id!)
+  const { mutate: uploadPhoto, isPending: uploading } = useUploadEmployeePhoto(id!)
 
   if (isLoading) return <Spin size="large" className="flex justify-center mt-20" />
   if (isError || !employee) return <Alert type="error" message="Employee not found" />
@@ -74,13 +81,45 @@ export function EmployeeDetailPage() {
           { title: `${employee.firstName} ${employee.lastName}` },
         ]}
         extra={
-          <Button icon={<EditOutlined />} onClick={() => setEditOpen(true)}>
-            Edit
-          </Button>
+          <Space>
+            {doctorProfile ? (
+              <Button
+                icon={<SolutionOutlined />}
+                onClick={() => navigate(`/doctors/${doctorProfile.id}`)}
+              >
+                View Doctor Profile
+              </Button>
+            ) : (
+              <Button
+                icon={<SolutionOutlined />}
+                onClick={() => setDoctorOpen(true)}
+              >
+                Create Doctor Profile
+              </Button>
+            )}
+            <Button icon={<EditOutlined />} onClick={() => setEditOpen(true)}>
+              Edit
+            </Button>
+          </Space>
         }
       />
 
       <Card className="mb-4">
+        <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start', marginBottom: 16 }}>
+          <PhotoUpload
+            photoUrl={employee.profilePhoto}
+            name={`${employee.firstName} ${employee.lastName}`}
+            size={88}
+            uploading={uploading}
+            onFileSelect={(file) => uploadPhoto(file)}
+          />
+          <div>
+            <Typography.Title level={4} style={{ margin: 0 }}>
+              {employee.firstName} {employee.lastName}
+            </Typography.Title>
+            <Typography.Text type="secondary">{employee.employeeCode}</Typography.Text>
+          </div>
+        </div>
         <Descriptions column={{ xs: 1, sm: 2, lg: 3 }} bordered size="small">
           <Descriptions.Item label="Employee ID" span={3}>
             <Typography.Text code copyable={{ text: employee.id }}>{employee.id}</Typography.Text>
@@ -158,6 +197,15 @@ export function EmployeeDetailPage() {
         onClose={() => setEditOpen(false)}
         employee={employee}
       />
+
+      {doctorOpen && (
+        <DoctorProfileModal
+          open={doctorOpen}
+          onClose={() => setDoctorOpen(false)}
+          employeeId={employee.id}
+          employeeName={`${employee.employeeCode} — ${employee.firstName} ${employee.lastName}`}
+        />
+      )}
     </div>
   )
 }

@@ -141,6 +141,13 @@ public class HrService {
     }
 
     @Transactional
+    public EmployeeResponse updateEmployeePhoto(UUID id, String photoUrl) {
+        Employee emp = findEmployeeOrThrow(id);
+        emp.setProfilePhoto(photoUrl);
+        return EmployeeResponse.from(employeeRepository.save(emp));
+    }
+
+    @Transactional
     public void deleteEmployee(UUID id) {
         findEmployeeOrThrow(id);
         employeeRepository.deleteById(id);

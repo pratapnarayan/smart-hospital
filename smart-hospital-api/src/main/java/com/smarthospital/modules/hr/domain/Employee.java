@@ -74,6 +74,9 @@ public class Employee extends AuditEntity {
     @Column(nullable = false, length = 20)
     private EmployeeStatus status = EmployeeStatus.ACTIVE;
 
+    @Column(name = "profile_photo", length = 500)
+    private String profilePhoto;
+
     @Column(name = "deleted_at")
     private Instant deletedAt;
 
@@ -99,6 +102,7 @@ public class Employee extends AuditEntity {
     public EmploymentType getEmploymentType() { return employmentType; }
     public LocalDate      getJoinDate()       { return joinDate; }
     public EmployeeStatus getStatus()         { return status; }
+    public String         getProfilePhoto()   { return profilePhoto; }
 
     public void setFirstName(String v)           { this.firstName      = v; }
     public void setLastName(String v)            { this.lastName       = v; }
@@ -114,6 +118,7 @@ public class Employee extends AuditEntity {
     public void setEmploymentType(EmploymentType v){ this.employmentType= v; }
     public void setJoinDate(LocalDate v)         { this.joinDate       = v; }
     public void setStatus(EmployeeStatus v)      { this.status         = v; }
+    public void setProfilePhoto(String v)        { this.profilePhoto   = v; }
 
     public static Builder builder() { return new Builder(); }
     public static final class Builder {
@@ -132,6 +137,7 @@ public class Employee extends AuditEntity {
         public Builder userId(UUID v)                { e.userId         = v; return this; }
         public Builder employmentType(EmploymentType v){ e.employmentType= v; return this; }
         public Builder joinDate(LocalDate v)         { e.joinDate       = v; return this; }
+        public Builder profilePhoto(String v)        { e.profilePhoto   = v; return this; }
         public Employee build()                      { return e; }
     }
 }

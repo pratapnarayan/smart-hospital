@@ -1,0 +1,1 @@
+ALTER TABLE employees ADD COLUMN IF NOT EXISTS profile_photo VARCHAR(500);

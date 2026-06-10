@@ -5,6 +5,7 @@ import {
   ExperimentOutlined, LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined,
   BellOutlined, ShopOutlined, HomeOutlined, ScheduleOutlined, TeamOutlined,
   DollarOutlined, InboxOutlined, HeartOutlined, AlertOutlined, RadarChartOutlined,
+  SolutionOutlined,
 } from '@ant-design/icons'
 import { useAuthStore } from '@/store/authStore'
 import { useUiStore } from '@/store/uiStore'
@@ -27,6 +28,13 @@ export function AppLayout() {
       onClick: () => navigate('/dashboard') },
     { key: 'patients',  icon: <UserOutlined />,       label: 'Patients',
       onClick: () => navigate('/patients') },
+    {
+      key: 'doctors', icon: <SolutionOutlined />, label: 'Doctors',
+      children: [
+        { key: 'doctors',               label: 'Doctor Directory', onClick: () => navigate('/doctors') },
+        { key: 'doctors/specializations', label: 'Specializations', onClick: () => navigate('/doctors/specializations') },
+      ],
+    },
     {
       key: 'opd', icon: <MedicineBoxOutlined />, label: 'OPD',
       onClick: () => navigate('/opd'),

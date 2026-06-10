@@ -117,6 +117,18 @@ export function useMarkAttendance() {
   })
 }
 
+export function useUploadEmployeePhoto(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (file: File) => hrApi.uploadEmployeePhoto(id, file).then(r => r.data.data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: KEYS.employee(id) })
+      message.success('Photo updated')
+    },
+    onError: () => message.error('Failed to upload photo'),
+  })
+}
+
 export function useApplyLeave() {
   const qc = useQueryClient()
   return useMutation({

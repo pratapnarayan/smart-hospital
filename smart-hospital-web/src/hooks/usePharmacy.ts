@@ -54,6 +54,22 @@ export function useExpiringBatches(days = 30) {
   })
 }
 
+export function useAddBatch() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (body: Omit<import('@/types').MedicineBatch, 'id' | 'medicineName' | 'expired' | 'lowStock'>) =>
+      pharmacyApi.addBatch(body).then((r) => r.data.data),
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: PHARMA_KEYS.stock(vars.medicineId) })
+      qc.invalidateQueries({ queryKey: ['pharma', 'medicines'] })
+      qc.invalidateQueries({ queryKey: PHARMA_KEYS.lowStock })
+      qc.invalidateQueries({ queryKey: ['pharma', 'expiring'] })
+      message.success('Batch added — stock updated')
+    },
+    onError: () => { message.error('Failed to add batch') },
+  })
+}
+
 export function useCreateBill() {
   const qc = useQueryClient()
   return useMutation({

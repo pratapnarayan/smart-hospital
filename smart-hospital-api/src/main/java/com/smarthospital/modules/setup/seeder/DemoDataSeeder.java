@@ -3,6 +3,10 @@ package com.smarthospital.modules.setup.seeder;
 import com.smarthospital.core.tenant.TenantContext;
 import com.smarthospital.modules.bloodbank.domain.*;
 import com.smarthospital.modules.bloodbank.repository.*;
+import com.smarthospital.modules.doctor.domain.DoctorProfile;
+import com.smarthospital.modules.doctor.domain.Specialization;
+import com.smarthospital.modules.doctor.repository.DoctorProfileRepository;
+import com.smarthospital.modules.doctor.repository.SpecializationRepository;
 import com.smarthospital.modules.finance.domain.*;
 import com.smarthospital.modules.finance.repository.*;
 import com.smarthospital.modules.frontoffice.domain.Appointment;
@@ -152,6 +156,8 @@ public class DemoDataSeeder implements ApplicationRunner {
     private final BloodRequestRepository     bloodRequestRepo;
     private final OperationTheatreRepository theatreRepo;
     private final OtScheduleRepository       otScheduleRepo;
+    private final SpecializationRepository   specializationRepo;
+    private final DoctorProfileRepository    doctorProfileRepo;
     private final JdbcTemplate               jdbc;
 
     public DemoDataSeeder(
@@ -183,6 +189,8 @@ public class DemoDataSeeder implements ApplicationRunner {
             BloodRequestRepository     bloodRequestRepo,
             OperationTheatreRepository theatreRepo,
             OtScheduleRepository       otScheduleRepo,
+            SpecializationRepository   specializationRepo,
+            DoctorProfileRepository    doctorProfileRepo,
             JdbcTemplate               jdbc) {
         this.patientRepo       = patientRepo;
         this.opdVisitRepo      = opdVisitRepo;
@@ -212,6 +220,8 @@ public class DemoDataSeeder implements ApplicationRunner {
         this.bloodRequestRepo  = bloodRequestRepo;
         this.theatreRepo       = theatreRepo;
         this.otScheduleRepo    = otScheduleRepo;
+        this.specializationRepo = specializationRepo;
+        this.doctorProfileRepo  = doctorProfileRepo;
         this.jdbc              = jdbc;
     }
 
@@ -273,6 +283,9 @@ public class DemoDataSeeder implements ApplicationRunner {
             // Phase 9 — OT
             seedOtSchedules(patients, admissions, emps, theatres);
 
+            // Phase 10 — Doctor Profiles
+            seedDoctorProfiles(emps, depts);
+
             log.info("╔══════════════════════════════════════════════════════════╗");
             log.info("║  DemoDataSeeder complete — 6-month data anchored to {}  ║", LocalDate.now());
             log.info("╚══════════════════════════════════════════════════════════╝");
@@ -317,6 +330,10 @@ public class DemoDataSeeder implements ApplicationRunner {
             "DELETE FROM opd_visits",              // cascades → opd_charges, prescriptions, prescription_items
             "DELETE FROM patients",                // hard-delete, bypasses @SQLDelete soft-delete
             "DELETE FROM attendance_records",      // FK → employees; must precede employees delete
+            "DELETE FROM doctor_schedules",        // FK → doctor_profiles
+            "DELETE FROM doctor_specializations",  // join table for doctor_profiles ↔ specializations
+            "DELETE FROM doctor_profiles",         // FK → employees
+            "DELETE FROM specializations",
             "DELETE FROM employees",               // hard-delete
             "DELETE FROM designations",
             "DELETE FROM hr_departments",
@@ -1134,6 +1151,65 @@ public class DemoDataSeeder implements ApplicationRunner {
             otScheduleRepo.save(sched);
         }
         log.info("[DemoSeeder] 15 OT schedules (10 completed, 3 scheduled, 2 cancelled)");
+    }
+
+    // ── Phase 10: Doctor Profiles ─────────────────────────────────────────────
+
+    private void seedDoctorProfiles(List<Employee> emps, List<HrDepartment> depts) {
+        // 5 specializations matching the 5 departments
+        record SP(String name, String code) {}
+        var specRows = List.of(
+            new SP("General Medicine", "GM"),
+            new SP("Surgery",          "SRG"),
+            new SP("Orthopaedics",     "ORT"),
+            new SP("Gynaecology",      "GYN"),
+            new SP("ENT",              "ENT")
+        );
+        Map<String, Specialization> specByCode = new LinkedHashMap<>();
+        for (var r : specRows) {
+            Specialization s = Specialization.builder()
+                .name(r.name()).code(r.code()).active(true).build();
+            specByCode.put(r.code(), specializationRepo.save(s));
+        }
+
+        // Doctor employees: the 10 named doctors (Consultants + Senior Residents)
+        List<String> drNames = List.of("Pradeep","Ananya","Suresh","Nitin","Ravi","Vaibhav","Meera","Shweta","Kiran","Rohit");
+
+        // Map from doctor first name to their department code for specialization assignment
+        Map<String, String> drToSpecCode = Map.of(
+            "Pradeep", "GM",  "Ananya", "GM",
+            "Suresh",  "SRG", "Nitin",  "SRG",
+            "Ravi",    "ORT", "Vaibhav","ORT",
+            "Meera",   "GYN", "Shweta", "GYN",
+            "Kiran",   "ENT", "Rohit",  "ENT"
+        );
+
+        List<Employee> doctors = emps.stream()
+            .filter(e -> drNames.contains(e.getFirstName()))
+            .collect(Collectors.toList());
+
+        int count = 0;
+        for (Employee e : doctors) {
+            String specCode = drToSpecCode.get(e.getFirstName());
+            Specialization spec = specCode != null ? specByCode.get(specCode) : null;
+
+            DoctorProfile profile = DoctorProfile.builder()
+                .employeeId(e.getId())
+                .experienceYears(2 + RNG.nextInt(20))
+                .consultationFee(new BigDecimal(String.valueOf(300 + RNG.nextInt(700))))
+                .followUpFee(new BigDecimal(String.valueOf(150 + RNG.nextInt(350))))
+                .teleConsultationFee(new BigDecimal(String.valueOf(200 + RNG.nextInt(400))))
+                .onlineBookingEnabled(true)
+                .displayOnPortal(true)
+                .build();
+
+            if (spec != null) {
+                profile.setSpecializations(new HashSet<>(Set.of(spec)));
+            }
+            doctorProfileRepo.save(profile);
+            count++;
+        }
+        log.info("[DemoSeeder] {} specializations, {} doctor profiles", specRows.size(), count);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
