@@ -40,4 +40,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
     @Query(value = "SELECT COUNT(*) + 1 FROM appointments WHERE appointment_number LIKE CONCAT('APT-', :year, '-%')",
            nativeQuery = true)
     long nextSequenceForYear(@Param("year") int year);
+
+    List<Appointment> findByDoctorIdAndAppointmentDateAndStatusNotIn(UUID doctorId, LocalDate appointmentDate, Collection<AppointmentStatus> excludedStatuses);
+
+    default List<Appointment> findByDoctorIdAndDate(UUID doctorId, LocalDate date) {
+        return findByDoctorIdAndAppointmentDateAndStatusNotIn(doctorId, date,
+            List.of(AppointmentStatus.CANCELLED, AppointmentStatus.NO_SHOW));
+    }
 }

@@ -141,6 +141,8 @@ public class AuthService {
                     Permission.BLOODBANK_VIEW, Permission.BLOODBANK_CREATE, Permission.BLOODBANK_EDIT,
                     Permission.OPERATION_VIEW, Permission.OPERATION_CREATE,
                     Permission.OPERATION_EDIT, Permission.OPERATION_MANAGE,
+                    Permission.DOCTOR_VIEW, Permission.DOCTOR_CREATE,
+                    Permission.DOCTOR_EDIT, Permission.DOCTOR_MANAGE,
                     Permission.REPORTS_VIEW);
             case DOCTOR      -> List.of(
                     Permission.PATIENT_VIEW,
@@ -148,16 +150,19 @@ public class AuthService {
                     Permission.IPD_VIEW, Permission.IPD_CREATE, Permission.IPD_EDIT,
                     Permission.PATHOLOGY_VIEW, Permission.PATHOLOGY_CREATE,
                     Permission.RADIOLOGY_VIEW, Permission.RADIOLOGY_CREATE,
-                    Permission.OPERATION_VIEW, Permission.OPERATION_CREATE, Permission.OPERATION_EDIT);
+                    Permission.OPERATION_VIEW, Permission.OPERATION_CREATE, Permission.OPERATION_EDIT,
+                    Permission.DOCTOR_VIEW, Permission.DOCTOR_EDIT);
             case NURSE       -> List.of(
                     Permission.PATIENT_VIEW, Permission.OPD_VIEW,
                     Permission.PATHOLOGY_VIEW, Permission.RADIOLOGY_VIEW,
-                    Permission.OPERATION_VIEW);
+                    Permission.OPERATION_VIEW,
+                    Permission.DOCTOR_VIEW);
             case PHARMACIST  -> List.of(
                     Permission.PATIENT_VIEW, Permission.PHARMACY_VIEW, Permission.PHARMACY_CREATE);
             case RECEPTIONIST -> List.of(
                     Permission.PATIENT_VIEW, Permission.PATIENT_CREATE,
-                    Permission.FRONTOFFICE_VIEW, Permission.FRONTOFFICE_CREATE, Permission.FRONTOFFICE_EDIT);
+                    Permission.FRONTOFFICE_VIEW, Permission.FRONTOFFICE_CREATE, Permission.FRONTOFFICE_EDIT,
+                    Permission.DOCTOR_VIEW);
             case ACCOUNTANT  -> List.of(
                     Permission.FINANCE_VIEW, Permission.FINANCE_CREATE, Permission.FINANCE_MANAGE,
                     Permission.REPORTS_VIEW);

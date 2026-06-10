@@ -5,6 +5,7 @@ import com.smarthospital.modules.hr.domain.LeaveRequest.LeaveStatus;
 import com.smarthospital.modules.hr.dto.*;
 import com.smarthospital.modules.hr.service.HrService;
 import com.smarthospital.shared.dto.ApiResponse;
+import com.smarthospital.shared.service.FileStorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -12,9 +13,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,9 +29,11 @@ import java.util.UUID;
 public class HrController {
 
     private final HrService hrService;
+    private final FileStorageService fileStorage;
 
-    public HrController(HrService hrService) {
-        this.hrService = hrService;
+    public HrController(HrService hrService, FileStorageService fileStorage) {
+        this.hrService   = hrService;
+        this.fileStorage = fileStorage;
     }
 
     // ── Departments ───────────────────────────────────────────────────────────
@@ -107,6 +112,16 @@ public class HrController {
             @PathVariable UUID id,
             @Valid @RequestBody EmployeeUpdateRequest request) {
         return ResponseEntity.ok(ApiResponse.ok(hrService.updateEmployee(id, request)));
+    }
+
+    @PostMapping(value = "/employees/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAuthority('HR.EDIT')")
+    @Operation(summary = "Upload employee profile photo")
+    public ResponseEntity<ApiResponse<EmployeeResponse>> uploadEmployeePhoto(
+            @PathVariable UUID id,
+            @RequestParam("file") MultipartFile file) {
+        String url = fileStorage.store(file, "emp_" + id);
+        return ResponseEntity.ok(ApiResponse.ok(hrService.updateEmployeePhoto(id, url)));
     }
 
     @DeleteMapping("/employees/{id}")

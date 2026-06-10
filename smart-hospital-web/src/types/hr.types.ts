@@ -36,6 +36,7 @@ export interface Employee {
   employmentType: EmploymentType
   joinDate: string
   status: EmployeeStatus
+  profilePhoto?: string
   createdAt: string
 }
 

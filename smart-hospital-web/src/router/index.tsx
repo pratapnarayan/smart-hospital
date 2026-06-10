@@ -33,6 +33,10 @@ import { OtScheduleListPage } from '@/pages/operation/OtScheduleListPage'
 import { OtScheduleDetailPage } from '@/pages/operation/OtScheduleDetailPage'
 import { RadiologyDashboardPage } from '@/pages/radiology/RadiologyDashboardPage'
 import { RadiologyOrdersPage } from '@/pages/radiology/RadiologyOrdersPage'
+import { DoctorDirectoryPage } from '@/pages/doctors/DoctorDirectoryPage'
+import { DoctorProfilePage } from '@/pages/doctors/DoctorProfilePage'
+import { SpecializationsPage } from '@/pages/doctors/SpecializationsPage'
+import { DoctorSchedulePage } from '@/pages/doctors/DoctorSchedulePage'
 
 export const router = createBrowserRouter([
   {
@@ -117,6 +121,24 @@ export const router = createBrowserRouter([
       {
         path: 'hr/leave',
         element: <PrivateRoute permission="HR.VIEW"><LeaveRequestPage /></PrivateRoute>,
+      },
+
+      // ── Doctors ───────────────────────────────────────────────────────────
+      {
+        path: 'doctors',
+        element: <PrivateRoute permission="DOCTOR.VIEW"><DoctorDirectoryPage /></PrivateRoute>,
+      },
+      {
+        path: 'doctors/specializations',
+        element: <PrivateRoute permission="DOCTOR.VIEW"><SpecializationsPage /></PrivateRoute>,
+      },
+      {
+        path: 'doctors/:id',
+        element: <PrivateRoute permission="DOCTOR.VIEW"><DoctorProfilePage /></PrivateRoute>,
+      },
+      {
+        path: 'doctors/:id/schedule',
+        element: <PrivateRoute permission="DOCTOR.EDIT"><DoctorSchedulePage /></PrivateRoute>,
       },
 
       // ── Pathology ─────────────────────────────────────────────────────────

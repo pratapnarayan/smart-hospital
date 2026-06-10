@@ -26,6 +26,7 @@ public record EmployeeResponse(
         EmploymentType employmentType,
         LocalDate      joinDate,
         EmployeeStatus status,
+        String         profilePhoto,
         Instant        createdAt
 ) {
     public static EmployeeResponse from(Employee e) {
@@ -36,7 +37,7 @@ public record EmployeeResponse(
                 e.getMobile(), e.getEmail(), e.getAddress(), e.getBloodGroup(),
                 e.getDepartmentId(), e.getDesignationId(), e.getUserId(),
                 e.getEmploymentType(), e.getJoinDate(), e.getStatus(),
-                e.getCreatedAt()
+                e.getProfilePhoto(), e.getCreatedAt()
         );
     }
 }

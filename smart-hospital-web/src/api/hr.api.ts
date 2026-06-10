@@ -38,6 +38,14 @@ export const hrApi = {
   deleteEmployee: (id: string) =>
     apiClient.delete(`/v1/hr/employees/${id}`),
 
+  uploadEmployeePhoto: (id: string, file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return apiClient.post<ApiResponse<Employee>>(`/v1/hr/employees/${id}/photo`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+
   // ── Attendance ─────────────────────────────────────────────────────────────
   markAttendance: (payload: {
     employeeId: string; attendanceDate: string;
