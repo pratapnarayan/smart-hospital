@@ -14,6 +14,7 @@ import { IpdAdmissionPage } from '@/pages/ipd/IpdAdmissionPage'
 import { AppointmentListPage } from '@/pages/frontoffice/AppointmentListPage'
 import { TokenQueuePage } from '@/pages/frontoffice/TokenQueuePage'
 import { EmployeeListPage } from '@/pages/hr/EmployeeListPage'
+import { EmployeeDetailPage } from '@/pages/hr/EmployeeDetailPage'
 import { AttendancePage } from '@/pages/hr/AttendancePage'
 import { LeaveRequestPage } from '@/pages/hr/LeaveRequestPage'
 import { PathologyListPage } from '@/pages/pathology/PathologyListPage'
@@ -104,6 +105,10 @@ export const router = createBrowserRouter([
       {
         path: 'hr/employees',
         element: <PrivateRoute permission="HR.VIEW"><EmployeeListPage /></PrivateRoute>,
+      },
+      {
+        path: 'hr/:id',
+        element: <PrivateRoute permission="HR.VIEW"><EmployeeDetailPage /></PrivateRoute>,
       },
       {
         path: 'hr/attendance',

@@ -55,6 +55,22 @@ export function useAttendanceByDate(date?: string) {
   })
 }
 
+export function useEmployeeAttendance(employeeId: string) {
+  return useQuery({
+    queryKey: KEYS.empAttendance(employeeId),
+    queryFn: () => hrApi.getEmployeeAttendance(employeeId).then(r => r.data.data),
+    enabled: !!employeeId,
+  })
+}
+
+export function useEmployeeLeaves(employeeId: string, page = 0) {
+  return useQuery({
+    queryKey: ['hr', 'leave', 'emp', employeeId, page],
+    queryFn: () => hrApi.listLeaves({ employeeId, page, size: 20 }).then(r => r.data.data),
+    enabled: !!employeeId,
+  })
+}
+
 export function useLeaves(status?: LeaveStatus, page = 0) {
   return useQuery({
     queryKey: [...KEYS.leaves(status), page],

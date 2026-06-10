@@ -1,35 +1,54 @@
 import { useEffect } from 'react'
 import { Modal, Form, Input, Select, DatePicker, Row, Col } from 'antd'
 import dayjs from 'dayjs'
-import { useCreateEmployee, useHrDepartments, useDesignations } from '@/hooks/useHr'
-import type { CreateEmployeePayload } from '@/types'
+import { useCreateEmployee, useUpdateEmployee, useHrDepartments, useDesignations } from '@/hooks/useHr'
+import type { CreateEmployeePayload, Employee } from '@/types'
 
-interface Props { open: boolean; onClose: () => void }
+interface Props { open: boolean; onClose: () => void; employee?: Employee }
 
-export function EmployeeFormModal({ open, onClose }: Props) {
+export function EmployeeFormModal({ open, onClose, employee }: Props) {
   const [form] = Form.useForm<CreateEmployeePayload & { _joinDate: dayjs.Dayjs; _dob: dayjs.Dayjs }>()
   const deptId = Form.useWatch('departmentId', form)
+  const isEdit = !!employee
 
-  const { data: depts = [] }        = useHrDepartments()
-  const { data: designations = [] } = useDesignations(deptId)
-  const { mutate: create, isPending } = useCreateEmployee()
+  const { data: depts = [] }          = useHrDepartments()
+  const { data: designations = [] }   = useDesignations(deptId)
+  const { mutate: create, isPending: creating } = useCreateEmployee()
+  const { mutate: update, isPending: updating } = useUpdateEmployee(employee?.id ?? '')
 
   useEffect(() => {
-    if (open) { form.resetFields(); form.setFieldsValue({ _joinDate: dayjs() }) }
-  }, [open, form])
+    if (open) {
+      if (employee) {
+        form.setFieldsValue({
+          ...employee,
+          _joinDate: dayjs(employee.joinDate),
+          _dob: employee.dateOfBirth ? dayjs(employee.dateOfBirth) : undefined,
+        })
+      } else {
+        form.resetFields()
+        form.setFieldsValue({ _joinDate: dayjs() })
+      }
+    }
+  }, [open, employee, form])
 
   const onFinish = (values: CreateEmployeePayload & { _joinDate: dayjs.Dayjs; _dob?: dayjs.Dayjs }) => {
     const { _joinDate, _dob, ...rest } = values
-    create({
+    const payload = {
       ...rest,
       joinDate: _joinDate.format('YYYY-MM-DD'),
       dateOfBirth: _dob ? _dob.format('YYYY-MM-DD') : undefined,
-    }, { onSuccess: onClose })
+    }
+    if (isEdit) {
+      update(payload, { onSuccess: onClose })
+    } else {
+      create(payload, { onSuccess: onClose })
+    }
   }
 
   return (
-    <Modal title="Add Employee" open={open} onCancel={onClose}
-      onOk={() => form.submit()} okText="Add" confirmLoading={isPending}
+    <Modal title={isEdit ? 'Edit Employee' : 'Add Employee'} open={open} onCancel={onClose}
+      onOk={() => form.submit()} okText={isEdit ? 'Save' : 'Add'}
+      confirmLoading={creating || updating}
       width={680} destroyOnHidden>
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Row gutter={16}>

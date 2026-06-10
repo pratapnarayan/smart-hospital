@@ -316,6 +316,7 @@ public class DemoDataSeeder implements ApplicationRunner {
             "DELETE FROM appointments",
             "DELETE FROM opd_visits",              // cascades → opd_charges, prescriptions, prescription_items
             "DELETE FROM patients",                // hard-delete, bypasses @SQLDelete soft-delete
+            "DELETE FROM attendance_records",      // FK → employees; must precede employees delete
             "DELETE FROM employees",               // hard-delete
             "DELETE FROM designations",
             "DELETE FROM hr_departments",
