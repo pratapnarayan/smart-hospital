@@ -4,12 +4,13 @@ import { PageHeader } from '@/components/common'
 import { KpiCard, EmptyChart, AnalyticsFilter, ExportToolbar, baseChartOptions, chartPalette } from '@/components/analytics'
 import { useLaboratoryAnalytics } from '@/hooks/useAnalytics'
 import { withDemoFallback, DEMO_LABORATORY } from '@/hooks/useDemoData'
+import type { LaboratoryAnalytics } from '@/types'
 
 const fmt = (v: number) => `₹${Number(v ?? 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
 
 export function LaboratoryAnalyticsPage() {
   const { data: raw, isLoading } = useLaboratoryAnalytics()
-  const { data, isDemo } = withDemoFallback(raw as any, DEMO_LABORATORY)
+  const { data, isDemo } = withDemoFallback<LaboratoryAnalytics>(raw, DEMO_LABORATORY)
 
   return (
     <div>

@@ -4,12 +4,13 @@ import { PageHeader } from '@/components/common'
 import { KpiCard, EmptyChart, AnalyticsFilter, ExportToolbar, baseChartOptions, chartPalette } from '@/components/analytics'
 import { useFinanceAnalytics } from '@/hooks/useAnalytics'
 import { withDemoFallback, DEMO_FINANCE } from '@/hooks/useDemoData'
+import type { FinanceAnalytics } from '@/types'
 
 const fmt = (v: number) => `₹${Number(v ?? 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
 
 export function FinancialAnalyticsPage() {
   const { data: raw, isLoading } = useFinanceAnalytics()
-  const { data, isDemo } = withDemoFallback(raw as any, DEMO_FINANCE)
+  const { data, isDemo } = withDemoFallback<FinanceAnalytics>(raw, DEMO_FINANCE)
 
   return (
     <div>

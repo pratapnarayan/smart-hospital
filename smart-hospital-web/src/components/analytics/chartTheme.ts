@@ -21,7 +21,7 @@ export const baseChartOptions: ApexCharts.ApexOptions = {
     toolbar: { show: false },
     animations: {
       enabled: true,
-      easing: 'easeinout',
+
       speed: 600,
     },
   },

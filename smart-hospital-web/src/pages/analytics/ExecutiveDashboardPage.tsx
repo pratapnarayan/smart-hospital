@@ -7,13 +7,14 @@ import {
 } from '@/components/analytics'
 import { useExecutiveDashboard } from '@/hooks/useAnalytics'
 import { withDemoFallback, DEMO_EXECUTIVE } from '@/hooks/useDemoData'
+import type { ExecutiveDashboard } from '@/types'
 
 const fmt = (v: number) =>
   `₹${Number(v ?? 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
 
 export function ExecutiveDashboardPage() {
   const { data: raw, isLoading } = useExecutiveDashboard()
-  const { data, isDemo } = withDemoFallback(raw as any, DEMO_EXECUTIVE)
+  const { data, isDemo } = withDemoFallback<ExecutiveDashboard>(raw, DEMO_EXECUTIVE)
 
   return (
     <div>

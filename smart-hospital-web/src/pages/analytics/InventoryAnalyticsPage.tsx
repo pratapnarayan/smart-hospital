@@ -5,13 +5,13 @@ import { PageHeader } from '@/components/common'
 import { KpiCard, EmptyChart, AnalyticsFilter, ExportToolbar, baseChartOptions, chartPalette } from '@/components/analytics'
 import { useInventoryAnalytics } from '@/hooks/useAnalytics'
 import { withDemoFallback, DEMO_INVENTORY } from '@/hooks/useDemoData'
-import type { LowStockEntry } from '@/types'
+import type { LowStockEntry, InventoryAnalytics } from '@/types'
 
 const fmt = (v: number) => `₹${Number(v ?? 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
 
 export function InventoryAnalyticsPage() {
   const { data: raw, isLoading } = useInventoryAnalytics()
-  const { data, isDemo } = withDemoFallback(raw as any, DEMO_INVENTORY)
+  const { data, isDemo } = withDemoFallback<InventoryAnalytics>(raw, DEMO_INVENTORY)
 
   const lowStockColumns = [
     { title: 'Item', dataIndex: 'itemName', key: 'itemName' },

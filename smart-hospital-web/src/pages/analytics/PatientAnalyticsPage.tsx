@@ -4,10 +4,11 @@ import { PageHeader } from '@/components/common'
 import { KpiCard, EmptyChart, AnalyticsFilter, ExportToolbar, baseChartOptions, chartPalette } from '@/components/analytics'
 import { usePatientAnalytics } from '@/hooks/useAnalytics'
 import { withDemoFallback, DEMO_PATIENTS } from '@/hooks/useDemoData'
+import type { PatientAnalytics } from '@/types'
 
 export function PatientAnalyticsPage() {
   const { data: raw, isLoading } = usePatientAnalytics()
-  const { data, isDemo } = withDemoFallback(raw as any, DEMO_PATIENTS)
+  const { data, isDemo } = withDemoFallback<PatientAnalytics>(raw, DEMO_PATIENTS)
 
   return (
     <div>

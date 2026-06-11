@@ -4,12 +4,13 @@ import { PageHeader } from '@/components/common'
 import { KpiCard, EmptyChart, AnalyticsFilter, ExportToolbar, baseChartOptions, chartPalette } from '@/components/analytics'
 import { usePharmacyAnalytics } from '@/hooks/useAnalytics'
 import { withDemoFallback, DEMO_PHARMACY } from '@/hooks/useDemoData'
+import type { PharmacyAnalytics } from '@/types'
 
 const fmt = (v: number) => `₹${Number(v ?? 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
 
 export function PharmacyAnalyticsPage() {
   const { data: raw, isLoading } = usePharmacyAnalytics()
-  const { data, isDemo } = withDemoFallback(raw as any, DEMO_PHARMACY)
+  const { data, isDemo } = withDemoFallback<PharmacyAnalytics>(raw, DEMO_PHARMACY)
 
   return (
     <div>

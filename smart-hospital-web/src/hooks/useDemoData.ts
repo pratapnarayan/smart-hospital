@@ -214,7 +214,7 @@ export const DEMO_INVENTORY: InventoryAnalytics = {
 }
 
 // Helper: returns demo data when real data is all-zeros (empty database)
-export function withDemoFallback<T extends Record<string, unknown>>(
+export function withDemoFallback<T extends object>(
   data: T | undefined,
   demoData: T
 ): { data: T; isDemo: boolean } {

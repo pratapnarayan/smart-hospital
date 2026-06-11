@@ -4,10 +4,11 @@ import { PageHeader } from '@/components/common'
 import { KpiCard, EmptyChart, AnalyticsFilter, ExportToolbar, baseChartOptions, chartPalette } from '@/components/analytics'
 import { useAppointmentAnalytics } from '@/hooks/useAnalytics'
 import { withDemoFallback, DEMO_APPOINTMENTS } from '@/hooks/useDemoData'
+import type { AppointmentAnalytics } from '@/types'
 
 export function AppointmentAnalyticsPage() {
   const { data: raw, isLoading } = useAppointmentAnalytics()
-  const { data, isDemo } = withDemoFallback(raw as any, DEMO_APPOINTMENTS)
+  const { data, isDemo } = withDemoFallback<AppointmentAnalytics>(raw, DEMO_APPOINTMENTS)
 
   return (
     <div>

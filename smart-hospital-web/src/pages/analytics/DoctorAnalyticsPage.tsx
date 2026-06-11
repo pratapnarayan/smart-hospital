@@ -5,13 +5,13 @@ import { PageHeader } from '@/components/common'
 import { KpiCard, EmptyChart, AnalyticsFilter, ExportToolbar, baseChartOptions, chartPalette } from '@/components/analytics'
 import { useDoctorAnalytics } from '@/hooks/useAnalytics'
 import { withDemoFallback, DEMO_DOCTORS } from '@/hooks/useDemoData'
-import type { DoctorStatEntry } from '@/types'
+import type { DoctorStatEntry, DoctorAnalytics } from '@/types'
 
 const fmt = (v: number) => `₹${Number(v ?? 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
 
 export function DoctorAnalyticsPage() {
   const { data: raw, isLoading } = useDoctorAnalytics()
-  const { data, isDemo } = withDemoFallback(raw as any, DEMO_DOCTORS)
+  const { data, isDemo } = withDemoFallback<DoctorAnalytics>(raw, DEMO_DOCTORS)
 
   const columns = [
     { title: '#', key: 'rank', render: (_: any, __: any, i: number) => <Tag color={i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'orange' : 'default'}>{i + 1}</Tag>, width: 50 },
