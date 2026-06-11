@@ -34,6 +34,20 @@ public interface IncomeEntryRepository extends JpaRepository<IncomeEntry, UUID> 
            nativeQuery = true)
     List<Object[]> sumBySourceType(@Param("from") LocalDate from, @Param("to") LocalDate to);
 
+    @Query(value = "SELECT COALESCE(doctor_name, 'Unknown'), COALESCE(SUM(amount), 0) " +
+                   "FROM income_entries WHERE entry_date BETWEEN :from AND :to " +
+                   "AND doctor_name IS NOT NULL " +
+                   "GROUP BY doctor_name ORDER BY SUM(amount) DESC LIMIT 10",
+           nativeQuery = true)
+    List<Object[]> sumByDoctorName(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
+    @Query(value = "SELECT TO_CHAR(entry_date, 'Mon YYYY'), COALESCE(SUM(amount), 0) " +
+                   "FROM income_entries WHERE entry_date BETWEEN :from AND :to " +
+                   "GROUP BY TO_CHAR(entry_date, 'Mon YYYY'), DATE_TRUNC('month', entry_date) " +
+                   "ORDER BY DATE_TRUNC('month', entry_date)",
+           nativeQuery = true)
+    List<Object[]> sumByMonth(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
     @Query(value = "SELECT COUNT(*) + 1 FROM income_entries WHERE EXTRACT(YEAR FROM created_at) = :year",
            nativeQuery = true)
     long nextSequenceForYear(@Param("year") int year);
