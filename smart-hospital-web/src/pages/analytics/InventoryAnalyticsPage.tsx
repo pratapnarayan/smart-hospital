@@ -11,7 +11,7 @@ const fmt = (v: number) => `₹${Number(v ?? 0).toLocaleString('en-IN', { maximu
 
 export function InventoryAnalyticsPage() {
   const { data: raw, isLoading } = useInventoryAnalytics()
-  const { data, isDemo } = withDemoFallback<InventoryAnalytics>(raw, DEMO_INVENTORY)
+  const { data, isDemo } = withDemoFallback<InventoryAnalytics>(raw, DEMO_INVENTORY, isLoading)
 
   const lowStockColumns = [
     { title: 'Item', dataIndex: 'itemName', key: 'itemName' },

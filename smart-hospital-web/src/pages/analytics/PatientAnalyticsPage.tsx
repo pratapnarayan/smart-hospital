@@ -8,7 +8,7 @@ import type { PatientAnalytics } from '@/types'
 
 export function PatientAnalyticsPage() {
   const { data: raw, isLoading } = usePatientAnalytics()
-  const { data, isDemo } = withDemoFallback<PatientAnalytics>(raw, DEMO_PATIENTS)
+  const { data, isDemo } = withDemoFallback<PatientAnalytics>(raw, DEMO_PATIENTS, isLoading)
 
   return (
     <div>

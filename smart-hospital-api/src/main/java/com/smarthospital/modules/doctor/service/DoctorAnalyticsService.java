@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ public class DoctorAnalyticsService {
     public DoctorAnalyticsResponse getAnalytics(LocalDate from, LocalDate to) {
         long totalDoctors  = doctorRepo.count();
         long activeDoctors = doctorRepo.countActiveDoctors();
+        double daysInRange = Math.max(1, ChronoUnit.DAYS.between(from, to) + 1);
 
         // Build revenue map by doctor name
         Map<String, BigDecimal> revenueMap = incomeRepo.sumByDoctorName(from, to).stream()
@@ -48,7 +50,7 @@ public class DoctorAnalyticsService {
                     String spec  = row[1] != null ? row[1].toString() : "";
                     long appts   = row[2] != null ? ((Number) row[2]).longValue() : 0L;
                     BigDecimal rev = revenueMap.getOrDefault(name, BigDecimal.ZERO);
-                    double util  = appts > 0 ? Math.min(100.0, appts / 30.0 * 100) : 0.0;
+                    double util  = appts > 0 ? Math.min(100.0, appts / daysInRange * 100) : 0.0;
                     return new DoctorAnalyticsResponse.DoctorStatEntry(name, spec, appts, rev, util);
                 })
                 .toList();

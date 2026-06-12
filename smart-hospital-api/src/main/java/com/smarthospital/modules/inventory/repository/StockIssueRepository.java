@@ -31,7 +31,7 @@ public interface StockIssueRepository extends JpaRepository<StockIssue, UUID> {
         SELECT item_name, CAST(SUM(quantity) AS bigint)
         FROM stock_issues
         WHERE issue_date BETWEEN :from AND :to
-        GROUP BY item_name
+        GROUP BY item_id, item_name
         ORDER BY SUM(quantity) DESC
         LIMIT :limit
         """, nativeQuery = true)
@@ -46,7 +46,7 @@ public interface StockIssueRepository extends JpaRepository<StockIssue, UUID> {
         LEFT JOIN stock_issues si ON si.item_id = ii.id
             AND si.issue_date BETWEEN :from AND :to
         WHERE ii.current_stock > 0
-        GROUP BY ii.name
+        GROUP BY ii.id, ii.name
         ORDER BY total_issued ASC
         LIMIT :limit
         """, nativeQuery = true)

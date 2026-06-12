@@ -213,14 +213,17 @@ export const DEMO_INVENTORY: InventoryAnalytics = {
   ],
 }
 
-// Helper: returns demo data when real data is all-zeros OR ?demo=true is in the URL
+// Helper: returns demo data when real data is all-zeros OR ?demo=true is in the URL.
+// Pass isLoading=true to suppress auto-fallback while the query is in-flight, preventing
+// a flash of demo data before the real response arrives.
 export function withDemoFallback<T extends object>(
   data: T | undefined,
-  demoData: T
+  demoData: T,
+  isLoading = false
 ): { data: T; isDemo: boolean } {
   const forceDemo = new URLSearchParams(window.location.search).get('demo') === 'true'
-  if (forceDemo || !data || isEmptyData(data as Record<string, unknown>)) {
-    return { data: demoData, isDemo: true }
-  }
+  if (forceDemo) return { data: demoData, isDemo: true }
+  if (isLoading) return { data: demoData, isDemo: false }
+  if (!data || isEmptyData(data as Record<string, unknown>)) return { data: demoData, isDemo: true }
   return { data, isDemo: false }
 }

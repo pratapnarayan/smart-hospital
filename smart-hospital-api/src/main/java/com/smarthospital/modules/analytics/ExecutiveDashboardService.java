@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -85,7 +86,7 @@ public class ExecutiveDashboardService {
                 patientData.registrationTrend(),
                 financeData.revenueBySource(),
                 doctorData.revenueByDoctor(),
-                doctorData.revenueByDoctor()  // department revenue — proxy via doctor breakdown
+                List.of()  // departmentRevenue — no cross-module aggregation yet; wired in a follow-up
         );
     }
 

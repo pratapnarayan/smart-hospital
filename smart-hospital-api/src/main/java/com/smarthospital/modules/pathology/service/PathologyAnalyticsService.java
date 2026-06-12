@@ -60,7 +60,7 @@ public class PathologyAnalyticsService {
                 .toList();
 
         // byDepartmentReferral maps to source_type (OPD / IPD / WALK_IN)
-        List<NameValuePoint> byDeptReferral = labOrderRepo.bySourceType(fromInstant, toInstant)
+        List<NameValuePoint> byDeptReferral = labOrderRepo.byDepartmentReferral(fromInstant, toInstant)
                 .stream()
                 .map(row -> new NameValuePoint(
                         row[0] != null ? row[0].toString() : "Unknown",

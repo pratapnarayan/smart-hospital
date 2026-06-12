@@ -45,23 +45,29 @@ export function ExportToolbar({ section, isDemoData }: ExportToolbarProps) {
           <Tag color="orange" icon={<InfoCircleOutlined />}>Demo Data</Tag>
         </Tooltip>
       )}
-      <Button
-        icon={<FileExcelOutlined />}
-        onClick={() => handleDownload('excel')}
-        loading={loading === 'excel'}
-        size="small"
-      >
-        Excel
-      </Button>
-      <Button
-        icon={<FilePdfOutlined />}
-        onClick={() => handleDownload('pdf')}
-        loading={loading === 'pdf'}
-        size="small"
-        danger
-      >
-        PDF
-      </Button>
+      <Tooltip title={isDemoData ? 'Export unavailable in demo mode' : undefined}>
+        <Button
+          icon={<FileExcelOutlined />}
+          onClick={() => handleDownload('excel')}
+          loading={loading === 'excel'}
+          disabled={isDemoData}
+          size="small"
+        >
+          Excel
+        </Button>
+      </Tooltip>
+      <Tooltip title={isDemoData ? 'Export unavailable in demo mode' : undefined}>
+        <Button
+          icon={<FilePdfOutlined />}
+          onClick={() => handleDownload('pdf')}
+          loading={loading === 'pdf'}
+          disabled={isDemoData}
+          size="small"
+          danger
+        >
+          PDF
+        </Button>
+      </Tooltip>
       <Button
         icon={<PrinterOutlined />}
         onClick={() => window.print()}

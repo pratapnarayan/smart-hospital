@@ -8,7 +8,7 @@ import type { AppointmentAnalytics } from '@/types'
 
 export function AppointmentAnalyticsPage() {
   const { data: raw, isLoading } = useAppointmentAnalytics()
-  const { data, isDemo } = withDemoFallback<AppointmentAnalytics>(raw, DEMO_APPOINTMENTS)
+  const { data, isDemo } = withDemoFallback<AppointmentAnalytics>(raw, DEMO_APPOINTMENTS, isLoading)
 
   return (
     <div>

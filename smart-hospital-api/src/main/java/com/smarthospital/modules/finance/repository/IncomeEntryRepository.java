@@ -24,6 +24,12 @@ public interface IncomeEntryRepository extends JpaRepository<IncomeEntry, UUID> 
            nativeQuery = true)
     BigDecimal sumByDate(@Param("date") LocalDate date);
 
+    @Query(value = "SELECT entry_date, COALESCE(SUM(amount), 0) FROM income_entries " +
+                   "WHERE entry_date BETWEEN :from AND :to " +
+                   "GROUP BY entry_date ORDER BY entry_date",
+           nativeQuery = true)
+    List<Object[]> sumGroupedByDate(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
     @Query(value = "SELECT COALESCE(SUM(amount), 0) FROM income_entries WHERE entry_date BETWEEN :from AND :to",
            nativeQuery = true)
     BigDecimal sumBetween(@Param("from") LocalDate from, @Param("to") LocalDate to);

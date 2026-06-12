@@ -53,15 +53,16 @@ public interface MedicineBatchRepository extends JpaRepository<MedicineBatch, UU
                               @Param("cutoff") LocalDate cutoff);
 
     /**
-     * Stock health counts: inStock (qty>10), low (qty 1-10), out (qty=0).
+     * Stock health counts relative to each medicine's reorder level.
      * Returns Object[] { label(String), count(Long) }
      */
     @Query(value = "SELECT " +
-                   "  CASE WHEN quantity > 10 THEN 'In Stock' " +
-                   "       WHEN quantity > 0  THEN 'Low' " +
+                   "  CASE WHEN mb.quantity > m.reorder_level THEN 'In Stock' " +
+                   "       WHEN mb.quantity > 0               THEN 'Low' " +
                    "       ELSE 'Out of Stock' END AS label, " +
                    "  COUNT(*) " +
-                   "FROM medicine_batches " +
+                   "FROM medicine_batches mb " +
+                   "JOIN medicines m ON m.id = mb.medicine_id " +
                    "GROUP BY label",
            nativeQuery = true)
     List<Object[]> stockHealthDistribution();

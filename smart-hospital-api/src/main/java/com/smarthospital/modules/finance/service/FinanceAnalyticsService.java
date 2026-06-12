@@ -12,6 +12,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -70,21 +72,27 @@ public class FinanceAnalyticsService {
     }
 
     private List<TrendPoint> buildDailyRevenueTrend(LocalDate from, LocalDate to) {
-        List<TrendPoint> trend = new ArrayList<>();
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("MMM dd");
+        Map<LocalDate, BigDecimal> byDate = incomeRepo.sumGroupedByDate(from, to).stream()
+                .collect(Collectors.toMap(
+                        r -> ((java.sql.Date) r[0]).toLocalDate(),
+                        r -> new BigDecimal(r[1].toString())));
+        List<TrendPoint> trend = new ArrayList<>();
         for (LocalDate d = from; !d.isAfter(to); d = d.plusDays(1)) {
-            BigDecimal amt = incomeRepo.sumByDate(d);
-            trend.add(new TrendPoint(d.format(fmt), amt.doubleValue()));
+            trend.add(new TrendPoint(d.format(fmt), byDate.getOrDefault(d, BigDecimal.ZERO).doubleValue()));
         }
         return trend;
     }
 
     private List<TrendPoint> buildDailyExpenseTrend(LocalDate from, LocalDate to) {
-        List<TrendPoint> trend = new ArrayList<>();
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("MMM dd");
+        Map<LocalDate, BigDecimal> byDate = expenseRepo.sumGroupedByDate(from, to).stream()
+                .collect(Collectors.toMap(
+                        r -> ((java.sql.Date) r[0]).toLocalDate(),
+                        r -> new BigDecimal(r[1].toString())));
+        List<TrendPoint> trend = new ArrayList<>();
         for (LocalDate d = from; !d.isAfter(to); d = d.plusDays(1)) {
-            BigDecimal amt = expenseRepo.sumByDate(d);
-            trend.add(new TrendPoint(d.format(fmt), amt.doubleValue()));
+            trend.add(new TrendPoint(d.format(fmt), byDate.getOrDefault(d, BigDecimal.ZERO).doubleValue()));
         }
         return trend;
     }

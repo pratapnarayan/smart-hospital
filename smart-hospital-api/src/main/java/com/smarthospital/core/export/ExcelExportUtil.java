@@ -142,7 +142,7 @@ public class ExcelExportUtil {
             pctStyle = style(wb, s -> {
                 s.setFont(boldFont);
                 s.setAlignment(HorizontalAlignment.RIGHT);
-                s.setDataFormat(wb.createDataFormat().getFormat("0.0\"%\""));
+                s.setDataFormat(wb.createDataFormat().getFormat("0.0%"));
             });
         }
 
@@ -396,19 +396,28 @@ public class ExcelExportUtil {
             writeReportHeader(summary, "Financial Analytics", dateRange, generatedBy, st);
             row = writeSectionTitle(summary, 3, "Financial Summary", st);
             Object[][] kpis = {
-                {"Total Revenue",         d.totalRevenue(),            true},
-                {"Total Expenses",        d.totalExpenses(),           true},
-                {"Net Profit",            d.netProfit(),               true},
-                {"Collection Efficiency", d.collectionEfficiencyPct(), false},
+                {"Total Revenue",         d.totalRevenue(),            "currency"},
+                {"Total Expenses",        d.totalExpenses(),           "currency"},
+                {"Net Profit",            d.netProfit(),               "currency"},
+                {"Collection Efficiency", d.collectionEfficiencyPct(), "pct"},
             };
             boolean alt = false;
             for (Object[] k : kpis) {
                 Row r = summary.createRow(row++); r.setHeightInPoints(15);
                 Cell name = r.createCell(0); name.setCellValue((String) k[0]);
                 name.setCellStyle(alt ? st.dataOdd : st.dataEven);
-                Cell val = r.createCell(1); val.setCellValue(((Number) k[1]).doubleValue());
-                val.setCellStyle(((Boolean) k[2]) ? (alt ? st.currencyOdd : st.currency)
-                                                  : (alt ? st.numOdd : st.numEven));
+                double rawVal = ((Number) k[1]).doubleValue();
+                Cell val = r.createCell(1);
+                if ("currency".equals(k[2])) {
+                    val.setCellValue(rawVal);
+                    val.setCellStyle(alt ? st.currencyOdd : st.currency);
+                } else if ("pct".equals(k[2])) {
+                    val.setCellValue(rawVal / 100);
+                    val.setCellStyle(st.pctStyle);
+                } else {
+                    val.setCellValue(rawVal);
+                    val.setCellStyle(alt ? st.numOdd : st.numEven);
+                }
                 alt = !alt;
             }
             summary.autoSizeColumn(0); summary.setColumnWidth(1, 5500);
@@ -622,6 +631,29 @@ public class ExcelExportUtil {
             row = writeSectionTitle(trend, 3, "Daily Appointment Trend", st);
             writeTrendTable(trend, row, new String[]{"Date", "Appointments"}, d.dailyTrend(), false, st);
 
+            if (d.peakHoursHeatmap() != null && !d.peakHoursHeatmap().isEmpty()) {
+                Sheet heatmap = wb.createSheet("Peak Hours");
+                heatmap.setColumnWidth(0, 3000);
+                heatmap.setColumnWidth(1, 4000);
+                heatmap.setColumnWidth(2, 3500);
+                writeReportHeader(heatmap, "Peak Hours Heatmap", dateRange, generatedBy, st);
+                row = writeSectionTitle(heatmap, 3, "Peak Hours by Weekday", st);
+                Row hdr = heatmap.createRow(row++); hdr.setHeightInPoints(15);
+                for (int ci = 0; ci < 3; ci++) {
+                    Cell c = hdr.createCell(ci);
+                    c.setCellValue(new String[]{"Hour", "Weekday", "Count"}[ci]);
+                    c.setCellStyle(st.colHeader);
+                }
+                boolean hmAlt = false;
+                for (AppointmentAnalyticsResponse.HeatmapCell cell : d.peakHoursHeatmap()) {
+                    Row r = heatmap.createRow(row++); r.setHeightInPoints(15);
+                    Cell h = r.createCell(0); h.setCellValue(cell.hour() + ":00"); h.setCellStyle(hmAlt ? st.dataOdd : st.dataEven);
+                    Cell w = r.createCell(1); w.setCellValue(cell.weekday()); w.setCellStyle(hmAlt ? st.dataOdd : st.dataEven);
+                    Cell ct = r.createCell(2); ct.setCellValue(cell.count()); ct.setCellStyle(hmAlt ? st.numOdd : st.numEven);
+                    hmAlt = !hmAlt;
+                }
+            }
+
             return toBytes(wb);
         } catch (IOException e) {
             throw new RuntimeException("Failed to generate Appointments Excel", e);
@@ -732,6 +764,12 @@ public class ExcelExportUtil {
             writeReportHeader(trend, "Daily Tests Trend", dateRange, generatedBy, st);
             row = writeSectionTitle(trend, 3, "Daily Tests Trend", st);
             writeTrendTable(trend, row, new String[]{"Date", "Tests"}, d.dailyTestsTrend(), false, st);
+
+            Sheet revTrend = wb.createSheet("Revenue Trend");
+            revTrend.setColumnWidth(0, 4000);
+            writeReportHeader(revTrend, "Revenue Trend", dateRange, generatedBy, st);
+            row = writeSectionTitle(revTrend, 3, "Daily Revenue Trend", st);
+            writeTrendTable(revTrend, row, new String[]{"Date", "Revenue (₹)"}, d.revenueTrend(), true, st);
 
             return toBytes(wb);
         } catch (IOException e) {

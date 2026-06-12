@@ -1,12 +1,27 @@
 import { DatePicker, Space, Button } from 'antd'
 import { FilterOutlined, ReloadOutlined } from '@ant-design/icons'
 import dayjs, { type Dayjs } from 'dayjs'
+import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 const { RangePicker } = DatePicker
 
+const DEFAULT_FROM = () => dayjs().subtract(29, 'day').format('YYYY-MM-DD')
+const DEFAULT_TO   = () => dayjs().format('YYYY-MM-DD')
+
 export function AnalyticsFilter() {
   const [params, setParams] = useSearchParams()
+
+  // Seed default dates into the URL so ExportToolbar always has them
+  useEffect(() => {
+    if (!params.get('from') || !params.get('to')) {
+      const next = new URLSearchParams(params)
+      if (!next.get('from')) next.set('from', DEFAULT_FROM())
+      if (!next.get('to'))   next.set('to', DEFAULT_TO())
+      setParams(next, { replace: true })
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const from = params.get('from') ? dayjs(params.get('from')) : dayjs().subtract(29, 'day')
   const to = params.get('to') ? dayjs(params.get('to')) : dayjs()
@@ -22,8 +37,8 @@ export function AnalyticsFilter() {
 
   const handleReset = () => {
     const next = new URLSearchParams(params)
-    next.delete('from')
-    next.delete('to')
+    next.set('from', DEFAULT_FROM())
+    next.set('to', DEFAULT_TO())
     setParams(next)
   }
 

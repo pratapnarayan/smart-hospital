@@ -10,7 +10,7 @@ const fmt = (v: number) => `₹${Number(v ?? 0).toLocaleString('en-IN', { maximu
 
 export function FinancialAnalyticsPage() {
   const { data: raw, isLoading } = useFinanceAnalytics()
-  const { data, isDemo } = withDemoFallback<FinanceAnalytics>(raw, DEMO_FINANCE)
+  const { data, isDemo } = withDemoFallback<FinanceAnalytics>(raw, DEMO_FINANCE, isLoading)
 
   return (
     <div>

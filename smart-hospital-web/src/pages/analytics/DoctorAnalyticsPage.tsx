@@ -11,7 +11,7 @@ const fmt = (v: number) => `₹${Number(v ?? 0).toLocaleString('en-IN', { maximu
 
 export function DoctorAnalyticsPage() {
   const { data: raw, isLoading } = useDoctorAnalytics()
-  const { data, isDemo } = withDemoFallback<DoctorAnalytics>(raw, DEMO_DOCTORS)
+  const { data, isDemo } = withDemoFallback<DoctorAnalytics>(raw, DEMO_DOCTORS, isLoading)
 
   const columns = [
     { title: '#', key: 'rank', render: (_: any, __: any, i: number) => <Tag color={i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'orange' : 'default'}>{i + 1}</Tag>, width: 50 },

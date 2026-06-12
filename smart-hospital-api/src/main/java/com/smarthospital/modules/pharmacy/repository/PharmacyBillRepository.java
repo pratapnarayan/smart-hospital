@@ -41,7 +41,7 @@ public interface PharmacyBillRepository extends JpaRepository<PharmacyBill, UUID
 
     /** Sum of net_amount for bills created today */
     @Query(value = "SELECT COALESCE(SUM(net_amount), 0) FROM pharmacy_bills " +
-                   "WHERE DATE(created_at AT TIME ZONE 'UTC') = CURRENT_DATE",
+                   "WHERE (created_at AT TIME ZONE 'UTC')::date = (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')::date",
            nativeQuery = true)
     java.math.BigDecimal sumNetAmountToday();
 

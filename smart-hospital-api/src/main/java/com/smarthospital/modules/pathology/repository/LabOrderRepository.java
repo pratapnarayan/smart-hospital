@@ -103,7 +103,7 @@ public interface LabOrderRepository extends JpaRepository<LabOrder, UUID> {
                                       @Param("to")   Instant to);
 
     /**
-     * Orders by source type (OPD / IPD / WALK_IN) in range.
+     * Orders by referral source (OPD / IPD / WALK_IN) in range.
      * Returns Object[] { sourceType(String), count(Long) }
      */
     @Query(value = "SELECT source_type, COUNT(*) FROM lab_orders " +
@@ -111,12 +111,12 @@ public interface LabOrderRepository extends JpaRepository<LabOrder, UUID> {
                    "  AND status <> 'CANCELLED' " +
                    "GROUP BY source_type",
            nativeQuery = true)
-    List<Object[]> bySourceType(@Param("from") Instant from,
-                                @Param("to")   Instant to);
+    List<Object[]> byDepartmentReferral(@Param("from") Instant from,
+                                        @Param("to")   Instant to);
 
     /** Count of orders created today (for Executive Dashboard) */
     @Query(value = "SELECT COUNT(*) FROM lab_orders " +
-                   "WHERE DATE(created_at AT TIME ZONE 'UTC') = CURRENT_DATE " +
+                   "WHERE (created_at AT TIME ZONE 'UTC')::date = (CURRENT_TIMESTAMP AT TIME ZONE 'UTC')::date " +
                    "  AND status <> 'CANCELLED'",
            nativeQuery = true)
     long countTestsToday();

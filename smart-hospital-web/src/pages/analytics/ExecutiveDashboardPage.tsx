@@ -14,7 +14,7 @@ const fmt = (v: number) =>
 
 export function ExecutiveDashboardPage() {
   const { data: raw, isLoading } = useExecutiveDashboard()
-  const { data, isDemo } = withDemoFallback<ExecutiveDashboard>(raw, DEMO_EXECUTIVE)
+  const { data, isDemo } = withDemoFallback<ExecutiveDashboard>(raw, DEMO_EXECUTIVE, isLoading)
 
   return (
     <div>

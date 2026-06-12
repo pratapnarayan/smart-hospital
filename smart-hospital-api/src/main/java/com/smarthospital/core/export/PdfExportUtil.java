@@ -231,7 +231,7 @@ public class PdfExportUtil {
     }
 
     // ── Trend table (compact 5-column grid) ───────────────────────────────
-    private static void addTrendGrid(Document doc, List<TrendPoint> trend) throws DocumentException {
+    private static void addTrendGrid(Document doc, List<TrendPoint> trend, boolean isCurrency) throws DocumentException {
         if (trend == null || trend.isEmpty()) return;
         int cols = 5;
         float[] widths = new float[cols * 2];
@@ -249,7 +249,8 @@ public class PdfExportUtil {
             lbl.setBorderColor(BORDER); lbl.setPadding(4);
             t.addCell(lbl);
 
-            PdfPCell val = new PdfPCell(new Phrase(inrD(pt.value()), boldFont()));
+            String valStr = isCurrency ? inrD(pt.value()) : String.format("%,.0f", pt.value());
+            PdfPCell val = new PdfPCell(new Phrase(valStr, boldFont()));
             val.setBackgroundColor(count % cols == 0 ? Color.WHITE : ALT_BG);
             val.setBorderColor(BORDER); val.setPadding(4);
             val.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -333,10 +334,10 @@ public class PdfExportUtil {
             addBarChart(doc, d.departmentRevenue(), ORANGE);
 
             addSectionTitle(doc, "Daily Revenue Trend (Last 30 Days)");
-            addTrendGrid(doc, d.revenueTrend());
+            addTrendGrid(doc, d.revenueTrend(), true);
 
             addSectionTitle(doc, "Patient Registration Growth (Monthly)");
-            addTrendGrid(doc, d.patientGrowth());
+            addTrendGrid(doc, d.patientGrowth(), false);
 
             addFooter(doc);
             doc.close();
@@ -372,10 +373,10 @@ public class PdfExportUtil {
             addBarChart(doc, d.monthlyComparison(), CYAN);
 
             addSectionTitle(doc, "Daily Revenue Trend");
-            addTrendGrid(doc, d.dailyRevenue());
+            addTrendGrid(doc, d.dailyRevenue(), true);
 
             addSectionTitle(doc, "Daily Expense Trend");
-            addTrendGrid(doc, d.expenseTrend());
+            addTrendGrid(doc, d.expenseTrend(), true);
 
             addFooter(doc);
             doc.close();
@@ -411,7 +412,7 @@ public class PdfExportUtil {
             addCountBarChart(doc, d.bloodGroupDistribution(), CYAN);
 
             addSectionTitle(doc, "Registration Trend (Monthly)");
-            addTrendGrid(doc, d.registrationTrend());
+            addTrendGrid(doc, d.registrationTrend(), false);
 
             addFooter(doc);
             doc.close();
@@ -492,7 +493,7 @@ public class PdfExportUtil {
             addCountBarChart(doc, d.byDepartment(), ORANGE);
 
             addSectionTitle(doc, "Daily Appointment Trend");
-            addTrendGrid(doc, d.dailyTrend());
+            addTrendGrid(doc, d.dailyTrend(), false);
 
             addFooter(doc);
             doc.close();
@@ -528,7 +529,7 @@ public class PdfExportUtil {
             addCountBarChart(doc, d.stockHealthDistribution(), CYAN);
 
             addSectionTitle(doc, "Daily Revenue Trend");
-            addTrendGrid(doc, d.revenueTrend());
+            addTrendGrid(doc, d.revenueTrend(), true);
 
             addFooter(doc);
             doc.close();
@@ -563,7 +564,7 @@ public class PdfExportUtil {
             addCountBarChart(doc, d.byDepartmentReferral(), PURPLE);
 
             addSectionTitle(doc, "Daily Tests Trend");
-            addTrendGrid(doc, d.dailyTestsTrend());
+            addTrendGrid(doc, d.dailyTestsTrend(), false);
 
             addFooter(doc);
             doc.close();
@@ -611,7 +612,7 @@ public class PdfExportUtil {
             }
 
             addSectionTitle(doc, "Stock Value Trend");
-            addTrendGrid(doc, d.stockValueTrend());
+            addTrendGrid(doc, d.stockValueTrend(), true);
 
             addFooter(doc);
             doc.close();

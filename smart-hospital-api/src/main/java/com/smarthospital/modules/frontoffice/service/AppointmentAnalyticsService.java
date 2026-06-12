@@ -28,15 +28,15 @@ public class AppointmentAnalyticsService {
         long completed   = appointmentRepo.countByStatusAndDateRange(AppointmentStatus.COMPLETED.name(), from, to);
         long cancelled   = appointmentRepo.countByStatusAndDateRange(AppointmentStatus.CANCELLED.name(), from, to);
         long noShow      = appointmentRepo.countByStatusAndDateRange(AppointmentStatus.NO_SHOW.name(), from, to);
-        long rescheduled = appointmentRepo.countByStatusAndDateRange(AppointmentStatus.SCHEDULED.name(), from, to);
+        long scheduled = appointmentRepo.countByStatusAndDateRange(AppointmentStatus.SCHEDULED.name(), from, to);
 
         List<TrendPoint> dailyTrend = buildDailyTrend(from, to);
 
         List<NameValuePoint> statusDist = List.of(
-                new NameValuePoint("Completed",   completed),
-                new NameValuePoint("Cancelled",   cancelled),
-                new NameValuePoint("No Show",     noShow),
-                new NameValuePoint("Rescheduled", rescheduled)
+                new NameValuePoint("Completed", completed),
+                new NameValuePoint("Cancelled", cancelled),
+                new NameValuePoint("No Show",   noShow),
+                new NameValuePoint("Scheduled", scheduled)
         );
 
         List<NameValuePoint> byDoctor = appointmentRepo.countByDoctor(from, to).stream()
@@ -62,7 +62,7 @@ public class AppointmentAnalyticsService {
                         .toList();
 
         return new AppointmentAnalyticsResponse(
-                total, completed, cancelled, noShow, rescheduled,
+                total, completed, cancelled, noShow, scheduled,
                 dailyTrend, statusDist, byDoctor, byDept, heatmap);
     }
 
