@@ -24,6 +24,12 @@ public interface IncomeEntryRepository extends JpaRepository<IncomeEntry, UUID> 
            nativeQuery = true)
     BigDecimal sumByDate(@Param("date") LocalDate date);
 
+    @Query(value = "SELECT entry_date, COALESCE(SUM(amount), 0) FROM income_entries " +
+                   "WHERE entry_date BETWEEN :from AND :to " +
+                   "GROUP BY entry_date ORDER BY entry_date",
+           nativeQuery = true)
+    List<Object[]> sumGroupedByDate(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
     @Query(value = "SELECT COALESCE(SUM(amount), 0) FROM income_entries WHERE entry_date BETWEEN :from AND :to",
            nativeQuery = true)
     BigDecimal sumBetween(@Param("from") LocalDate from, @Param("to") LocalDate to);
@@ -33,6 +39,20 @@ public interface IncomeEntryRepository extends JpaRepository<IncomeEntry, UUID> 
                    "GROUP BY source_type ORDER BY SUM(amount) DESC",
            nativeQuery = true)
     List<Object[]> sumBySourceType(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
+    @Query(value = "SELECT COALESCE(received_by, 'Unknown'), COALESCE(SUM(amount), 0) " +
+                   "FROM income_entries WHERE entry_date BETWEEN :from AND :to " +
+                   "AND received_by IS NOT NULL " +
+                   "GROUP BY received_by ORDER BY SUM(amount) DESC LIMIT 10",
+           nativeQuery = true)
+    List<Object[]> sumByDoctorName(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
+    @Query(value = "SELECT TO_CHAR(entry_date, 'Mon YYYY'), COALESCE(SUM(amount), 0) " +
+                   "FROM income_entries WHERE entry_date BETWEEN :from AND :to " +
+                   "GROUP BY TO_CHAR(entry_date, 'Mon YYYY'), DATE_TRUNC('month', entry_date) " +
+                   "ORDER BY DATE_TRUNC('month', entry_date)",
+           nativeQuery = true)
+    List<Object[]> sumByMonth(@Param("from") LocalDate from, @Param("to") LocalDate to);
 
     @Query(value = "SELECT COUNT(*) + 1 FROM income_entries WHERE EXTRACT(YEAR FROM created_at) = :year",
            nativeQuery = true)

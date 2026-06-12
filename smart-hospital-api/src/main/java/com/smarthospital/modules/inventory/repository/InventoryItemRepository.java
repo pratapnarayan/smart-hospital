@@ -27,4 +27,19 @@ public interface InventoryItemRepository extends JpaRepository<InventoryItem, UU
 
     boolean existsByItemCodeIgnoreCase(String itemCode);
     boolean existsByItemCodeIgnoreCaseAndIdNot(String itemCode, UUID id);
+
+    @Query("SELECT COUNT(i) FROM InventoryItem i WHERE i.currentStock <= i.reorderLevel")
+    long countLowStock();
+
+    @Query("SELECT COUNT(i) FROM InventoryItem i WHERE i.currentStock = 0")
+    long countOutOfStock();
+
+    /** Stock value grouped by category: [categoryName, SUM(currentStock)] */
+    @Query(value = """
+        SELECT category_name, SUM(current_stock)
+        FROM inventory_items
+        GROUP BY category_name
+        ORDER BY SUM(current_stock) DESC
+        """, nativeQuery = true)
+    List<Object[]> stockByCategoryRaw();
 }

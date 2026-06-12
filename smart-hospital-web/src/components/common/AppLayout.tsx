@@ -5,7 +5,7 @@ import {
   ExperimentOutlined, LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined,
   BellOutlined, ShopOutlined, HomeOutlined, ScheduleOutlined, TeamOutlined,
   DollarOutlined, InboxOutlined, HeartOutlined, AlertOutlined, RadarChartOutlined,
-  SolutionOutlined,
+  SolutionOutlined, BarChartOutlined,
 } from '@ant-design/icons'
 import { useAuthStore } from '@/store/authStore'
 import { useUiStore } from '@/store/uiStore'
@@ -22,6 +22,7 @@ export function AppLayout() {
   const location = useLocation()
 
   const selectedKey = location.pathname.split('/')[1] || 'dashboard'
+  const selectedSubKey = location.pathname.split('/').slice(1, 3).join('/') || 'dashboard'
 
   const menuItems: MenuProps['items'] = [
     { key: 'dashboard', icon: <DashboardOutlined />, label: 'Dashboard',
@@ -111,6 +112,21 @@ export function AppLayout() {
         { key: 'finance/expenses',  label: 'Expenses',  onClick: () => navigate('/finance/expenses') },
       ],
     },
+    {
+      key: 'analytics',
+      icon: <BarChartOutlined />,
+      label: 'Reports & Analytics',
+      children: [
+        { key: 'analytics/executive',    label: 'Executive Dashboard',   onClick: () => navigate('/analytics/executive') },
+        { key: 'analytics/financial',    label: 'Financial Analytics',   onClick: () => navigate('/analytics/financial') },
+        { key: 'analytics/patients',     label: 'Patient Analytics',     onClick: () => navigate('/analytics/patients') },
+        { key: 'analytics/doctors',      label: 'Doctor Analytics',      onClick: () => navigate('/analytics/doctors') },
+        { key: 'analytics/appointments', label: 'Appointment Analytics', onClick: () => navigate('/analytics/appointments') },
+        { key: 'analytics/pharmacy',     label: 'Pharmacy Analytics',    onClick: () => navigate('/analytics/pharmacy') },
+        { key: 'analytics/laboratory',   label: 'Laboratory Analytics',  onClick: () => navigate('/analytics/laboratory') },
+        { key: 'analytics/inventory',    label: 'Inventory Analytics',   onClick: () => navigate('/analytics/inventory') },
+      ],
+    },
   ]
 
   const userMenu: MenuProps['items'] = [
@@ -145,7 +161,7 @@ export function AppLayout() {
         <Menu
           theme="dark"
           mode="inline"
-          selectedKeys={[selectedKey]}
+          selectedKeys={[selectedSubKey]}
           defaultOpenKeys={['pharmacy']}
           items={menuItems}
         />

@@ -37,6 +37,14 @@ import { DoctorDirectoryPage } from '@/pages/doctors/DoctorDirectoryPage'
 import { DoctorProfilePage } from '@/pages/doctors/DoctorProfilePage'
 import { SpecializationsPage } from '@/pages/doctors/SpecializationsPage'
 import { DoctorSchedulePage } from '@/pages/doctors/DoctorSchedulePage'
+import { ExecutiveDashboardPage } from '@/pages/analytics/ExecutiveDashboardPage'
+import { FinancialAnalyticsPage } from '@/pages/analytics/FinancialAnalyticsPage'
+import { PatientAnalyticsPage } from '@/pages/analytics/PatientAnalyticsPage'
+import { DoctorAnalyticsPage } from '@/pages/analytics/DoctorAnalyticsPage'
+import { AppointmentAnalyticsPage } from '@/pages/analytics/AppointmentAnalyticsPage'
+import { PharmacyAnalyticsPage } from '@/pages/analytics/PharmacyAnalyticsPage'
+import { LaboratoryAnalyticsPage } from '@/pages/analytics/LaboratoryAnalyticsPage'
+import { InventoryAnalyticsPage } from '@/pages/analytics/InventoryAnalyticsPage'
 
 export const router = createBrowserRouter([
   {
@@ -215,6 +223,44 @@ export const router = createBrowserRouter([
       {
         path: 'finance/expenses',
         element: <PrivateRoute permission="FINANCE.VIEW"><ExpenseListPage /></PrivateRoute>,
+      },
+
+      // ── Analytics ─────────────────────────────────────────────────────────
+      {
+        path: 'analytics',
+        element: <Navigate to="/analytics/executive" replace />,
+      },
+      {
+        path: 'analytics/executive',
+        element: <PrivateRoute permission="REPORTS.VIEW"><ExecutiveDashboardPage /></PrivateRoute>,
+      },
+      {
+        path: 'analytics/financial',
+        element: <PrivateRoute permission="REPORTS.VIEW"><FinancialAnalyticsPage /></PrivateRoute>,
+      },
+      {
+        path: 'analytics/patients',
+        element: <PrivateRoute permission="REPORTS.VIEW"><PatientAnalyticsPage /></PrivateRoute>,
+      },
+      {
+        path: 'analytics/doctors',
+        element: <PrivateRoute permission="REPORTS.VIEW"><DoctorAnalyticsPage /></PrivateRoute>,
+      },
+      {
+        path: 'analytics/appointments',
+        element: <PrivateRoute permission="REPORTS.VIEW"><AppointmentAnalyticsPage /></PrivateRoute>,
+      },
+      {
+        path: 'analytics/pharmacy',
+        element: <PrivateRoute permission="REPORTS.VIEW"><PharmacyAnalyticsPage /></PrivateRoute>,
+      },
+      {
+        path: 'analytics/laboratory',
+        element: <PrivateRoute permission="REPORTS.VIEW"><LaboratoryAnalyticsPage /></PrivateRoute>,
+      },
+      {
+        path: 'analytics/inventory',
+        element: <PrivateRoute permission="REPORTS.VIEW"><InventoryAnalyticsPage /></PrivateRoute>,
       },
 
       // ── 403 ───────────────────────────────────────────────────────────────

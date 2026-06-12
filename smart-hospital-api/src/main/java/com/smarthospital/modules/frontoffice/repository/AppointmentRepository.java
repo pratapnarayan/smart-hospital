@@ -47,4 +47,38 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
         return findByDoctorIdAndAppointmentDateAndStatusNotIn(doctorId, date,
             List.of(AppointmentStatus.CANCELLED, AppointmentStatus.NO_SHOW));
     }
+
+    @Query(value = "SELECT COUNT(*) FROM appointments WHERE appointment_date BETWEEN :from AND :to",
+           nativeQuery = true)
+    long countByDateRange(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
+    @Query(value = "SELECT COUNT(*) FROM appointments WHERE status = :status AND appointment_date BETWEEN :from AND :to",
+           nativeQuery = true)
+    long countByStatusAndDateRange(@Param("status") String status,
+                                   @Param("from") LocalDate from,
+                                   @Param("to") LocalDate to);
+
+    @Query(value = "SELECT doctor_name, COUNT(*) FROM appointments " +
+                   "WHERE appointment_date BETWEEN :from AND :to AND doctor_name IS NOT NULL " +
+                   "GROUP BY doctor_name ORDER BY COUNT(*) DESC",
+           nativeQuery = true)
+    List<Object[]> countByDoctor(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
+    @Query(value = "SELECT department, COUNT(*) FROM appointments " +
+                   "WHERE appointment_date BETWEEN :from AND :to AND department IS NOT NULL " +
+                   "GROUP BY department ORDER BY COUNT(*) DESC",
+           nativeQuery = true)
+    List<Object[]> countByDepartment(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
+    @Query(value = """
+        SELECT EXTRACT(HOUR FROM CAST(time_slot AS TIME))::int AS hr,
+               TO_CHAR(appointment_date, 'Dy') AS wd,
+               COUNT(*) AS cnt
+        FROM appointments
+        WHERE appointment_date BETWEEN :from AND :to
+          AND time_slot IS NOT NULL
+        GROUP BY hr, wd
+        ORDER BY hr, wd
+        """, nativeQuery = true)
+    List<Object[]> countByHourAndWeekday(@Param("from") LocalDate from, @Param("to") LocalDate to);
 }
