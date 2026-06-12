@@ -28,7 +28,7 @@ public interface DoctorProfileRepository extends JpaRepository<DoctorProfile, UU
     @Query(value = "SELECT COUNT(DISTINCT dp.id) FROM doctor_profiles dp " +
                    "JOIN employees e ON e.id = dp.employee_id AND e.deleted_at IS NULL AND e.status = 'ACTIVE' " +
                    "JOIN doctor_schedules ds ON ds.doctor_id = dp.id AND ds.active = true " +
-                   "WHERE ds.day_of_week = UPPER(TO_CHAR(CURRENT_DATE, 'Day'))::text",
+                   "WHERE ds.day_of_week = TRIM(UPPER(TO_CHAR(CURRENT_DATE, 'Day')))",
            nativeQuery = true)
     long countAvailableTodayDoctors();
 

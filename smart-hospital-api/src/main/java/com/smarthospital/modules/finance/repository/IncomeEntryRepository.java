@@ -34,10 +34,10 @@ public interface IncomeEntryRepository extends JpaRepository<IncomeEntry, UUID> 
            nativeQuery = true)
     List<Object[]> sumBySourceType(@Param("from") LocalDate from, @Param("to") LocalDate to);
 
-    @Query(value = "SELECT COALESCE(doctor_name, 'Unknown'), COALESCE(SUM(amount), 0) " +
+    @Query(value = "SELECT COALESCE(received_by, 'Unknown'), COALESCE(SUM(amount), 0) " +
                    "FROM income_entries WHERE entry_date BETWEEN :from AND :to " +
-                   "AND doctor_name IS NOT NULL " +
-                   "GROUP BY doctor_name ORDER BY SUM(amount) DESC LIMIT 10",
+                   "AND received_by IS NOT NULL " +
+                   "GROUP BY received_by ORDER BY SUM(amount) DESC LIMIT 10",
            nativeQuery = true)
     List<Object[]> sumByDoctorName(@Param("from") LocalDate from, @Param("to") LocalDate to);
 
