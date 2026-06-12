@@ -6,7 +6,7 @@ import {
 import type { ColumnsType } from 'antd/es/table'
 import { PlusOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
-import { PageHeader } from '@/components/common'
+import { PageHeader, PatientSearchSelect, StaffSearchSelect } from '@/components/common'
 import {
   useBloodRequests, useCreateBloodRequest, useCancelRequest,
   useAvailableUnits, useIssueBlood, useRequestIssues,
@@ -160,7 +160,7 @@ export function BloodRequestListPage() {
         width={540} destroyOnHidden>
         <Form form={form} layout="vertical" onFinish={onNewFinish}>
           <Form.Item name="patientName" label="Patient Name" rules={[{ required: true }]}>
-            <Input placeholder="Patient full name" />
+            <PatientSearchSelect placeholder="Search patient…" />
           </Form.Item>
           <Space style={{ width: '100%' }} size={12}>
             <Form.Item name="bloodGroup" label="Blood Group" style={{ width: 130 }}
@@ -185,7 +185,7 @@ export function BloodRequestListPage() {
               ]} />
             </Form.Item>
             <Form.Item name="requestedBy" label="Requested By (Doctor)" style={{ flex: 1 }}>
-              <Input />
+              <StaffSearchSelect isDoctor placeholder="Search doctor…" />
             </Form.Item>
           </Space>
           <Form.Item name="notes" label="Clinical Notes">
@@ -239,8 +239,11 @@ export function BloodRequestListPage() {
               notFoundContent="No available units for this blood group and component"
             />
 
-            <Input placeholder="Issued by (staff name)" value={issuedBy}
-              onChange={e => setIssuedBy(e.target.value)} />
+            <StaffSearchSelect
+              placeholder="Search staff…"
+              value={issuedBy}
+              onChange={v => setIssuedBy(v)}
+            />
           </>
         )}
       </Modal>

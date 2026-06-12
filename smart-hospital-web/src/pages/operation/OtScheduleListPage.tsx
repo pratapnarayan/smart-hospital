@@ -7,7 +7,7 @@ import {
 import type { ColumnsType } from 'antd/es/table'
 import { PlusOutlined } from '@ant-design/icons'
 import dayjs, { type Dayjs } from 'dayjs'
-import { PageHeader } from '@/components/common'
+import { PageHeader, PatientSearchSelect, StaffSearchSelect } from '@/components/common'
 import { useOtSchedules, useOtTheatres, useScheduleOperation } from '@/hooks/useOperation'
 import { useAuthStore } from '@/store/authStore'
 import type { OtSchedule, OtStatus, ScheduleOperationPayload, OperationType, OtPriority } from '@/types'
@@ -133,7 +133,7 @@ export function OtScheduleListPage() {
       >
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item name="patientName" label="Patient Name" rules={[{ required: true }]}>
-            <Input placeholder="Patient full name" />
+            <PatientSearchSelect placeholder="Search patient…" />
           </Form.Item>
 
           <Space style={{ width: '100%' }} size={12}>
@@ -177,10 +177,10 @@ export function OtScheduleListPage() {
 
           <Space style={{ width: '100%' }} size={12}>
             <Form.Item name="surgeonName" label="Lead Surgeon" style={{ flex: 1 }}>
-              <Input placeholder="Surgeon name" />
+              <StaffSearchSelect isDoctor placeholder="Search surgeon…" />
             </Form.Item>
             <Form.Item name="anesthetistName" label="Anesthetist" style={{ flex: 1 }}>
-              <Input placeholder="Anesthetist name" />
+              <StaffSearchSelect isDoctor placeholder="Search anesthetist…" />
             </Form.Item>
           </Space>
 

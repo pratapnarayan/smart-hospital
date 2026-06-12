@@ -6,7 +6,7 @@ import {
 import type { ColumnsType } from 'antd/es/table'
 import { PlusOutlined, ThunderboltOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
-import { PageHeader } from '@/components/common'
+import { PageHeader, PatientSearchSelect } from '@/components/common'
 import { useOpdTokens, useIssueToken, useUpdateTokenStatus } from '@/hooks/useFrontOffice'
 import { useAuthStore } from '@/store/authStore'
 import type { OpdToken, TokenStatus, IssueTokenPayload } from '@/types'
@@ -147,8 +147,8 @@ export function TokenQueuePage() {
         destroyOnHidden
       >
         <Form form={form} layout="vertical" onFinish={onIssue}>
-          <Form.Item name="patientId" label="Patient ID" rules={[{ required: true }]}>
-            <Input placeholder="Paste patient UUID" />
+          <Form.Item name="patientId" label="Patient" rules={[{ required: true, message: 'Select a patient' }]}>
+            <PatientSearchSelect valueMode="id" placeholder="Search patient by name or mobile…" />
           </Form.Item>
           <Row gutter={16}>
             <Col span={14}>

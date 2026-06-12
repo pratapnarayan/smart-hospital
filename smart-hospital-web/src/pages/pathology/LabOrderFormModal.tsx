@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Modal, Form, Input, Select, Checkbox, Divider, Tag, Space } from 'antd'
 import { useLabCategories, useLabTests, useCreateLabOrder } from '@/hooks/usePathology'
+import { PatientSearchSelect, StaffSearchSelect } from '@/components/common'
 import type { CreateLabOrderPayload, LabTest } from '@/types'
 
 interface Props {
@@ -62,8 +63,12 @@ export function LabOrderFormModal({ open, onClose, patientId, sourceType, source
       destroyOnHidden
     >
       <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Form.Item name="patientId" label="Patient ID" rules={[{ required: true }]}>
-          <Input placeholder="Paste patient UUID" disabled={!!patientId} />
+        <Form.Item name="patientId" label="Patient" rules={[{ required: true, message: 'Select a patient' }]}>
+          <PatientSearchSelect
+            valueMode="id"
+            placeholder="Search patient by name or mobile…"
+            disabled={!!patientId}
+          />
         </Form.Item>
 
         <Space style={{ width: '100%' }} size={16}>
@@ -82,7 +87,7 @@ export function LabOrderFormModal({ open, onClose, patientId, sourceType, source
             ]} />
           </Form.Item>
           <Form.Item name="referredByName" label="Referred By" style={{ flex: 1 }}>
-            <Input placeholder="Doctor name" />
+            <StaffSearchSelect isDoctor placeholder="Search doctor…" />
           </Form.Item>
         </Space>
 

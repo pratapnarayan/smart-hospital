@@ -3,7 +3,7 @@ import { Table, Button, Tag, Select, DatePicker, Space, Card, Modal, Form, Input
 import type { ColumnsType } from 'antd/es/table'
 import { PlusOutlined } from '@ant-design/icons'
 import dayjs, { type Dayjs } from 'dayjs'
-import { PageHeader } from '@/components/common'
+import { PageHeader, PatientSearchSelect, StaffSearchSelect } from '@/components/common'
 import { useIncomeEntries, useCreateIncome } from '@/hooks/useFinance'
 import { useAuthStore } from '@/store/authStore'
 import type { IncomeEntry, IncomeSourceType, PaymentMode, CreateIncomePayload } from '@/types'
@@ -146,7 +146,7 @@ export function IncomeListPage() {
 
           <Space style={{ width: '100%' }} size={12}>
             <Form.Item name="patientName" label="Patient Name" style={{ flex: 1 }}>
-              <Input placeholder="Patient / payer name" />
+              <PatientSearchSelect placeholder="Search patient…" />
             </Form.Item>
             <Form.Item name="referenceNo" label="Ref / Receipt No." style={{ flex: 1 }}>
               <Input placeholder="Optional reference" />
@@ -154,7 +154,7 @@ export function IncomeListPage() {
           </Space>
 
           <Form.Item name="receivedBy" label="Received By">
-            <Input placeholder="Staff name" />
+            <StaffSearchSelect placeholder="Search staff…" />
           </Form.Item>
 
           <Form.Item name="notes" label="Notes">
