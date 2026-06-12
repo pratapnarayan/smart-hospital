@@ -23,24 +23,26 @@ export function KpiCard({ title, value, trend, subtitle, loading, prefix = '' }:
   const trendText = trend != null ? `${Math.abs(trend).toFixed(1)}%` : null
 
   return (
-    <Card loading={loading} bodyStyle={{ padding: '20px 24px' }}
-      style={{ borderRadius: 12, boxShadow: '0 1px 8px rgba(0,0,0,0.06)' }}>
-      <Typography.Text type="secondary" style={{ fontSize: 13 }}>{title}</Typography.Text>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
-        <Typography.Title level={3} style={{ margin: 0, fontSize: 26 }}>
-          {prefix}{value}
-        </Typography.Title>
+    <Card loading={loading} styles={{ body: { padding: '16px 20px' } }}
+      style={{ borderRadius: 12, boxShadow: '0 1px 8px rgba(0,0,0,0.06)', height: '100%' }}>
+      <Typography.Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 6, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        {title}
+      </Typography.Text>
+      <Typography.Title level={3} style={{ margin: 0, fontSize: 22, lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        {prefix}{value}
+      </Typography.Title>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
         {trendText && (
-          <Tag color={trendColor} icon={trendIcon} style={{ fontSize: 12 }}>
+          <Tag color={trendColor} icon={trendIcon} style={{ fontSize: 11, margin: 0 }}>
             {trendText}
           </Tag>
         )}
+        {subtitle && (
+          <Typography.Text type="secondary" style={{ fontSize: 11 }}>
+            {subtitle}
+          </Typography.Text>
+        )}
       </div>
-      {subtitle && (
-        <Typography.Text type="secondary" style={{ fontSize: 11, marginTop: 4, display: 'block' }}>
-          {subtitle}
-        </Typography.Text>
-      )}
     </Card>
   )
 }

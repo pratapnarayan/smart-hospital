@@ -40,7 +40,7 @@ export function ExecutiveDashboardPage() {
           { title: 'Medicine Sales', value: fmt(data.medicineSalesToday), trend: null, subtitle: 'today' },
           { title: 'Inventory Alerts', value: data.inventoryAlerts.toString(), trend: data.inventoryAlerts > 0 ? -1 : 0, subtitle: 'items low/out' },
         ].map((kpi) => (
-          <Col xs={24} sm={12} md={8} lg={6} xl={4} key={kpi.title} style={{ minWidth: 180 }}>
+          <Col xs={24} sm={12} md={8} lg={6} xl={4} key={kpi.title}>
             <KpiCard {...kpi} loading={isLoading} />
           </Col>
         ))}
