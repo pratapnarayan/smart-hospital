@@ -10,6 +10,7 @@ import {
 import { useAuthStore } from '@/store/authStore'
 import { useUiStore } from '@/store/uiStore'
 import { useLogout } from '@/hooks/useAuth'
+import { useTenantConfig } from '@/hooks/useTenantConfig'
 import { initials } from '@/utils'
 
 const { Header, Sider, Content } = Layout
@@ -20,6 +21,8 @@ export function AppLayout() {
   const { mutate: logout } = useLogout()
   const navigate = useNavigate()
   const location = useLocation()
+  const { data: tenantConfig } = useTenantConfig()
+  const isClinicOPD = tenantConfig?.clinicType === 'CLINIC_OPD'
 
   const selectedKey = location.pathname.split('/')[1] || 'dashboard'
   const selectedSubKey = location.pathname.split('/').slice(1, 3).join('/') || 'dashboard'
@@ -127,6 +130,16 @@ export function AppLayout() {
         { key: 'analytics/inventory',    label: 'Inventory Analytics',   onClick: () => navigate('/analytics/inventory') },
       ],
     },
+    {
+      key: 'clinic',
+      icon: <MedicineBoxOutlined />,
+      label: 'SmartClinic',
+      children: [
+        { key: 'clinic/dashboard',        label: 'Clinic Dashboard',  onClick: () => navigate('/clinic/dashboard') },
+        { key: 'clinic/home-collections', label: 'Home Collections',  onClick: () => navigate('/clinic/home-collections') },
+        { key: 'clinic/bills',            label: 'Visit Bills',       onClick: () => navigate('/clinic/bills') },
+      ],
+    },
   ]
 
   const userMenu: MenuProps['items'] = [
@@ -163,7 +176,10 @@ export function AppLayout() {
           mode="inline"
           selectedKeys={[selectedSubKey]}
           defaultOpenKeys={['pharmacy']}
-          items={menuItems}
+          items={isClinicOPD
+            ? menuItems.filter(item =>
+                ['dashboard', 'patients', 'clinic', 'pathology', 'pharmacy', 'analytics'].includes(item?.key as string))
+            : menuItems}
         />
       </Sider>
 

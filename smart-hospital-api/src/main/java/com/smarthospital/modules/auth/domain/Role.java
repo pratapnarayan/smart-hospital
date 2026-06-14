@@ -10,5 +10,6 @@ public enum Role {
     ACCOUNTANT,
     PATHOLOGIST,
     RADIOLOGIST,
-    PATIENT
+    PATIENT,
+    CLINIC_TECHNICIAN
 }

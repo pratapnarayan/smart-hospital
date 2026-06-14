@@ -46,6 +46,12 @@ public final class Permission {
     public static final String DOCTOR_CREATE       = "DOCTOR.CREATE";
     public static final String DOCTOR_EDIT         = "DOCTOR.EDIT";
     public static final String DOCTOR_MANAGE       = "DOCTOR.MANAGE";
+    public static final String CLINIC_HOME_COLLECTION_VIEW   = "CLINIC.HOME_COLLECTION.VIEW";
+    public static final String CLINIC_HOME_COLLECTION_CREATE = "CLINIC.HOME_COLLECTION.CREATE";
+    public static final String CLINIC_HOME_COLLECTION_EDIT   = "CLINIC.HOME_COLLECTION.EDIT";
+    public static final String CLINIC_BILL_VIEW              = "CLINIC.BILL.VIEW";
+    public static final String CLINIC_BILL_CREATE            = "CLINIC.BILL.CREATE";
+    public static final String CLINIC_BILL_MANAGE            = "CLINIC.BILL.MANAGE";
 
     private Permission() {}
 }

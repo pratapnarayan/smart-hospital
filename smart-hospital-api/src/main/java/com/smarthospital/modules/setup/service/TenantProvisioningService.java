@@ -126,6 +126,7 @@ public class TenantProvisioningService {
                         .schemaName(schemaName)
                         .plan(StringUtils.hasText(req.plan()) ? req.plan().toUpperCase() : "BASIC")
                         .status("ACTIVE")
+                        .clinicType(req.clinicType() != null ? req.clinicType() : "FULL_HMS")
                         .build());
     }
 

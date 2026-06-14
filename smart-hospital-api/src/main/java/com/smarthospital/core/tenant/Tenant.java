@@ -39,6 +39,9 @@ public class Tenant {
     @Column(nullable = false, length = 20)
     private String status = "ACTIVE";
 
+    @Column(name = "clinic_type", nullable = false, length = 20)
+    private String clinicType = "FULL_HMS";
+
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)
     private Instant createdAt;
@@ -55,13 +58,15 @@ public class Tenant {
     public String  getSchemaName() { return schemaName; }
     public String  getPlan()       { return plan; }
     public String  getStatus()     { return status; }
+    public String  getClinicType() { return clinicType; }
     public Instant getCreatedAt()  { return createdAt; }
     public Instant getUpdatedAt()  { return updatedAt; }
 
     // Setters
-    public void setName(String v)   { this.name   = v; }
-    public void setPlan(String v)   { this.plan   = v; }
-    public void setStatus(String v) { this.status = v; }
+    public void setName(String v)       { this.name       = v; }
+    public void setPlan(String v)       { this.plan       = v; }
+    public void setStatus(String v)     { this.status     = v; }
+    public void setClinicType(String v) { this.clinicType = v; }
 
     // Builder
     public static Builder builder() { return new Builder(); }
@@ -71,6 +76,7 @@ public class Tenant {
         public Builder schemaName(String v) { t.schemaName = v; return this; }
         public Builder plan(String v)       { t.plan       = v; return this; }
         public Builder status(String v)     { t.status     = v; return this; }
+        public Builder clinicType(String v) { t.clinicType = v; return this; }
         public Tenant build()               { return t; }
     }
 }

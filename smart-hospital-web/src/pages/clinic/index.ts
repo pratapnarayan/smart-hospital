@@ -1,0 +1,7 @@
+export { QuickRegisterModal } from './QuickRegisterModal'
+export { HomeCollectionStatusModal } from './HomeCollectionStatusModal'
+export { ScheduleHomeCollectionModal } from './ScheduleHomeCollectionModal'
+export { HomeCollectionSchedulePage } from './HomeCollectionSchedulePage'
+export { VisitBillPage } from './VisitBillPage'
+export { PatientBillHistoryPage } from './PatientBillHistoryPage'
+export { ClinicDashboardPage } from './ClinicDashboardPage'

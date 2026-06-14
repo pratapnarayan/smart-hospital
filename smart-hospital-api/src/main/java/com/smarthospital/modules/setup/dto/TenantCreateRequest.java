@@ -33,5 +33,10 @@ public record TenantCreateRequest(
 
         /** First admin user last name */
         @NotBlank @Size(max = 100)
-        String adminLastName
+        String adminLastName,
+
+        /** Clinic operating mode: FULL_HMS | CLINIC_OPD (defaults to FULL_HMS if omitted) */
+        @Pattern(regexp = "FULL_HMS|CLINIC_OPD",
+                 message = "clinicType must be FULL_HMS or CLINIC_OPD")
+        String clinicType
 ) {}

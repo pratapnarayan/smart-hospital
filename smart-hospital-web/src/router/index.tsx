@@ -45,6 +45,10 @@ import { AppointmentAnalyticsPage } from '@/pages/analytics/AppointmentAnalytics
 import { PharmacyAnalyticsPage } from '@/pages/analytics/PharmacyAnalyticsPage'
 import { LaboratoryAnalyticsPage } from '@/pages/analytics/LaboratoryAnalyticsPage'
 import { InventoryAnalyticsPage } from '@/pages/analytics/InventoryAnalyticsPage'
+import { ClinicDashboardPage } from '@/pages/clinic/ClinicDashboardPage'
+import { HomeCollectionSchedulePage } from '@/pages/clinic/HomeCollectionSchedulePage'
+import { VisitBillPage } from '@/pages/clinic/VisitBillPage'
+import { PatientBillHistoryPage } from '@/pages/clinic/PatientBillHistoryPage'
 
 export const router = createBrowserRouter([
   {
@@ -261,6 +265,24 @@ export const router = createBrowserRouter([
       {
         path: 'analytics/inventory',
         element: <PrivateRoute permission="REPORTS.VIEW"><InventoryAnalyticsPage /></PrivateRoute>,
+      },
+
+      // ── SmartClinic ───────────────────────────────────────────────────────
+      {
+        path: 'clinic/dashboard',
+        element: <PrivateRoute><ClinicDashboardPage /></PrivateRoute>,
+      },
+      {
+        path: 'clinic/home-collections',
+        element: <PrivateRoute permission="CLINIC.HOME_COLLECTION.VIEW"><HomeCollectionSchedulePage /></PrivateRoute>,
+      },
+      {
+        path: 'clinic/bills',
+        element: <PrivateRoute permission="CLINIC.BILL.VIEW"><VisitBillPage /></PrivateRoute>,
+      },
+      {
+        path: 'clinic/bills/patient/:patientId',
+        element: <PrivateRoute permission="CLINIC.BILL.VIEW"><PatientBillHistoryPage /></PrivateRoute>,
       },
 
       // ── 403 ───────────────────────────────────────────────────────────────

@@ -11,11 +11,13 @@ public record TenantResponse(
         String  schemaName,
         String  plan,
         String  status,
-        Instant createdAt
+        Instant createdAt,
+        String  clinicType
 ) {
     public static TenantResponse from(Tenant t) {
         return new TenantResponse(
                 t.getId(), t.getName(), t.getSchemaName(),
-                t.getPlan(), t.getStatus(), t.getCreatedAt());
+                t.getPlan(), t.getStatus(), t.getCreatedAt(),
+                t.getClinicType());
     }
 }

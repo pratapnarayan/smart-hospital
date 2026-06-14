@@ -175,6 +175,10 @@ public class AuthService {
                     Permission.RADIOLOGY_VIEW, Permission.RADIOLOGY_CREATE,
                     Permission.RADIOLOGY_EDIT, Permission.RADIOLOGY_MANAGE);
             case PATIENT     -> List.of(Permission.PATIENT_VIEW);
+            case CLINIC_TECHNICIAN -> List.of(
+                    Permission.PATIENT_VIEW,
+                    Permission.CLINIC_HOME_COLLECTION_VIEW,
+                    Permission.CLINIC_HOME_COLLECTION_EDIT);
         };
     }
 }
