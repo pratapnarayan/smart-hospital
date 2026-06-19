@@ -11,8 +11,8 @@ import {
 import type { Patient } from '@/types'
 
 const patientSchema = z.object({
-  firstName: z.string().min(1, 'First name is required').max(50, 'Too long'),
-  lastName: z.string().min(1, 'Last name is required').max(50, 'Too long'),
+  firstName: z.string().trim().min(1, 'First name is required').max(50, 'Too long'),
+  lastName: z.string().trim().min(1, 'Last name is required').max(50, 'Too long'),
   dateOfBirth: z.string().min(1, 'Date of birth is required'),
   gender: z.enum(['MALE', 'FEMALE', 'OTHER'], { required_error: 'Gender is required' }),
   mobile: z
@@ -105,6 +105,7 @@ export function PatientFormModal({ open, onClose, patient }: Props) {
   const onSubmit = (data: PatientFormData) => {
     const payload = { ...data }
     if (isEdit) {
+      if (!payload.guardianMobile) delete payload.guardianMobile
       update(payload, { onSuccess: () => { reset(); onClose() } })
     } else {
       create(payload, { onSuccess: () => { reset(); onClose() } })

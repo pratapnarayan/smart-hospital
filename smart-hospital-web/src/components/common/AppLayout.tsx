@@ -37,7 +37,7 @@ const menuConfig: MenuItem[] = [
   {
     key: 'doctors', icon: <SolutionOutlined />, label: 'Doctors',
     children: [
-      { key: 'doctors', icon: <UserOutlined />, label: 'Doctor Directory', path: '/doctors' },
+      { key: 'doctor-directory', icon: <UserOutlined />, label: 'Doctor Directory', path: '/doctors' },
       { key: 'doctors/specializations', icon: <ExperimentOutlined />, label: 'Specializations', path: '/doctors/specializations' },
     ],
   },
@@ -223,7 +223,10 @@ export function AppLayout() {
 
   const isMobile = useMediaQuery('(max-width: 768px)')
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
-  const [openKeys, setOpenKeys] = useState<string[]>(['pharmacy'])
+  const [openKeys, setOpenKeys] = useState<string[]>(() => {
+    const first = location.pathname.split('/').filter(Boolean)[0]
+    return first ? [first] : []
+  })
 
   const pathSegments = location.pathname.split('/').filter(Boolean)
   const selectedKey = pathSegments.slice(0, 2).join('/') || 'dashboard'
@@ -240,6 +243,11 @@ export function AppLayout() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile])
+
+  useEffect(() => {
+    const first = location.pathname.split('/').filter(Boolean)[0]
+    if (first) setOpenKeys(prev => prev.includes(first) ? prev : [first])
+  }, [location.pathname])
 
   const handleNavigate = useCallback(
     (path: string) => {

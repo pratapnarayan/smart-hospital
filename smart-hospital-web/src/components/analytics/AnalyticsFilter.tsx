@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { DatePicker, Button, Tooltip } from 'antd'
 import { ReloadOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
@@ -21,6 +22,7 @@ const presets: { label: string; value: DatePreset; days: number }[] = [
 ]
 
 export function AnalyticsFilter({ onChange, className }: AnalyticsFilterProps) {
+  const [, setSearchParams] = useSearchParams()
   const [activePreset, setActivePreset] = useState<DatePreset>('30d')
   const [customRange, setCustomRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | null>(null)
 
@@ -29,14 +31,20 @@ export function AnalyticsFilter({ onChange, className }: AnalyticsFilterProps) {
     setCustomRange(null)
     const end   = dayjs()
     const start = days === 0 ? end : end.subtract(days, 'day')
-    onChange?.(start.format('YYYY-MM-DD'), end.format('YYYY-MM-DD'))
+    const s = start.format('YYYY-MM-DD')
+    const e = end.format('YYYY-MM-DD')
+    setSearchParams({ from: s, to: e })
+    onChange?.(s, e)
   }
 
   const handleCustomRangeChange = (dates: [dayjs.Dayjs, dayjs.Dayjs] | null) => {
     if (dates) {
       setActivePreset('custom')
       setCustomRange(dates)
-      onChange?.(dates[0].format('YYYY-MM-DD'), dates[1].format('YYYY-MM-DD'))
+      const s = dates[0].format('YYYY-MM-DD')
+      const e = dates[1].format('YYYY-MM-DD')
+      setSearchParams({ from: s, to: e })
+      onChange?.(s, e)
     }
   }
 
@@ -45,7 +53,10 @@ export function AnalyticsFilter({ onChange, className }: AnalyticsFilterProps) {
       const preset = presets.find((p) => p.value === activePreset)
       if (preset) handlePresetClick(preset.value, preset.days)
     } else if (customRange) {
-      onChange?.(customRange[0].format('YYYY-MM-DD'), customRange[1].format('YYYY-MM-DD'))
+      const s = customRange[0].format('YYYY-MM-DD')
+      const e = customRange[1].format('YYYY-MM-DD')
+      setSearchParams({ from: s, to: e })
+      onChange?.(s, e)
     }
   }
 

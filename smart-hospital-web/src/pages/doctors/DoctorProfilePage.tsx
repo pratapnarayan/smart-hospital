@@ -136,7 +136,7 @@ export function DoctorProfilePage() {
             label: 'Overview',
             children: (
               <Row gutter={16}>
-                <Col xs={24} lg={16}>
+                <Col xs={24} lg={16} className="space-y-4">
                   {doctor.biography && (
                     <Card title="About" className="medical-card">
                       <Paragraph>{doctor.biography}</Paragraph>

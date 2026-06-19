@@ -192,8 +192,6 @@ export function PatientListPage() {
             pageSize: data?.size ?? 20,
             total: data?.total ?? 0,
             onChange: (p) => setPage(p - 1),
-            showSizeChanger: true,
-            pageSizeOptions: [10, 20, 50, 100],
             showTotal: (total) => (
               <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
                 Showing{' '}

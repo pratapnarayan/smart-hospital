@@ -171,7 +171,7 @@ export const formatCurrency = (value: number): string =>
   `₹${Number(value ?? 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
 
 export const formatCompactCurrency = (value: number): string =>
-  `₹${(value / 1000).toFixed(0)}k`
+  `₹${Math.floor(value / 1000)}k`
 
 export const formatNumber = (value: number): string =>
   value?.toLocaleString('en-IN') ?? '0'

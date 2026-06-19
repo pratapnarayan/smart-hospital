@@ -41,6 +41,7 @@ export function PageHeader({
               icon={<ArrowLeftOutlined />}
               onClick={onBack ?? (() => navigate(-1))}
               className="mt-1 hover:bg-neutral-100"
+              aria-label="Go back"
             />
           )}
           <div>

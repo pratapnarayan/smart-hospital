@@ -24,7 +24,7 @@ export function FinancialAnalyticsPage() {
         <KpiCard title="Total Revenue" value={formatCurrency(data.totalRevenue)} loading={isLoading} icon={<DollarCircleOutlined />} color="success" />
         <KpiCard title="Total Expenses" value={formatCurrency(data.totalExpenses)} loading={isLoading} icon={<CreditCardOutlined />} color="warning" />
         <KpiCard title="Net Profit" value={formatCurrency(data.netProfit)} loading={isLoading} icon={<RiseOutlined />} color="primary" />
-        <KpiCard title="Collection Efficiency" value={`${data.collectionEfficiencyPct?.toFixed(1)}%`} loading={isLoading} icon={<PercentageOutlined />} color="cyan" />
+        <KpiCard title="Collection Efficiency" value={`${(data.collectionEfficiencyPct ?? 0).toFixed(1)}%`} loading={isLoading} icon={<PercentageOutlined />} color="cyan" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

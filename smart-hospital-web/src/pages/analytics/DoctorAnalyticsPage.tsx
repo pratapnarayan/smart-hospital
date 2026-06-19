@@ -18,7 +18,7 @@ export function DoctorAnalyticsPage() {
     { title: 'Specialization', dataIndex: 'specialization', key: 'specialization', render: (v: string) => <Tag color="blue">{v}</Tag> },
     { title: 'Appointments', dataIndex: 'appointmentsCompleted', key: 'appts' },
     { title: 'Revenue', dataIndex: 'revenueGenerated', key: 'rev', render: (v: number) => formatCurrency(v) },
-    { title: 'Utilization', dataIndex: 'utilizationPct', key: 'util', render: (v: number) => `${v?.toFixed(1)}%` },
+    { title: 'Utilization', dataIndex: 'utilizationPct', key: 'util', render: (v: number) => `${(v ?? 0).toFixed(1)}%` },
   ]
 
   return (

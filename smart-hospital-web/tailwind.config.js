@@ -1,3 +1,25 @@
+/**
+ * TODO: Token consolidation (deferred from PR #4 UI revamp)
+ *
+ * Problem: Design tokens (color palettes, shadow scales, animation keyframes) are currently
+ * duplicated across three places:
+ *   1. tailwind.config.js  — Tailwind `theme.extend` values
+ *   2. src/theme/index.ts  — `designTokens` JS object consumed by components and AppLayout
+ *   3. src/index.css       — CSS custom properties (--color-*, --shadow-*, etc.)
+ *
+ * Any token change (e.g. tweaking the primary-500 blue) must be applied in all three files,
+ * which will inevitably drift over time.
+ *
+ * Proposed fix:
+ *   - Create src/tokens/designTokens.ts as the single source of truth (plain JS/TS object).
+ *   - Import it into tailwind.config.js using the `theme.extend` spread.
+ *   - Import it into src/index.css generation (or use a build step / postcss plugin).
+ *   - Replace src/theme/index.ts with a re-export from src/tokens/designTokens.ts.
+ *
+ * Scope: ~3 files changed, no runtime behaviour change, purely a DX/maintenance improvement.
+ * Can be done as a standalone refactor PR before the next feature cycle.
+ */
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [

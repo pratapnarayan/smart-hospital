@@ -10,7 +10,7 @@ interface AuthState {
 
   setSession: (accessToken: string, refreshToken: string, user: UserProfile) => void
   setTokens: (accessToken: string, refreshToken: string) => void
-  setUser: (user: UserProfile) => void
+  setUser: (user: UserProfile | null) => void
   logout: () => void
   hasPermission: (permission: string) => boolean
   hasRole: (role: string) => boolean

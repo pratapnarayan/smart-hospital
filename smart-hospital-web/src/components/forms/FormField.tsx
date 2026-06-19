@@ -66,7 +66,6 @@ export function FormField<T extends FieldValues>({
               <TextArea
                 {...commonProps}
                 rows={rows}
-                prefix={prefix as never}
                 value={field.value as string}
                 onChange={(e) => field.onChange(e.target.value)}
                 onBlur={field.onBlur}
